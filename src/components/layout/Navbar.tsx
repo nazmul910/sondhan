@@ -67,18 +67,18 @@ export default function Navbar() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <DivisionSelect className="max-md:hidden h-9 w-[104px] text-xs max-[380px]:w-[88px] md:inline-flex sm:w-[118px]" />
-          <button className="hidden h-9 min-w-[82px] rounded-lg bg-primary px-4 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-md sm:inline-flex sm:items-center sm:justify-center" type="button">
+          <DivisionSelect className="max-md:hidden cursor-pointer h-9 w-[104px] text-xs max-[380px]:w-[88px] md:inline-flex sm:w-[118px]" />
+          <button className="hidden cursor-pointer h-9 min-w-[82px] rounded-lg bg-primary px-4 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-md sm:inline-flex sm:items-center sm:justify-center" type="button">
             লগইন
           </button>
           <button
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "মেনু বন্ধ করুন" : "মেনু খুলুন"}
-            className="grid size-9 place-items-center rounded-lg border border-slate-200 text-slate-700 transition hover:border-primary hover:bg-primary-soft hover:text-primary-dark lg:hidden"
+            className="grid cursor-pointer size-9 place-items-center cursor-pointer rounded-lg border border-slate-200 text-slate-700 transition hover:border-primary hover:bg-primary-soft hover:text-primary-dark lg:hidden"
             onClick={() => setMenuOpen((open) => !open)}
             type="button"
           >
-            {menuOpen ? <X aria-hidden="true" className="size-5" /> : <Menu aria-hidden="true" className="size-5" />}
+            {menuOpen ? <X aria-hidden="true" className="size-5 cursor-pointer" /> : <Menu aria-hidden="true" className="size-5 cursor-pointer" />}
           </button>
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function Navbar() {
           মেনু
           <button
             aria-label="মেনু বন্ধ করুন"
-            className="grid size-9 place-items-center rounded-lg border border-slate-200 transition hover:border-primary hover:text-primary"
+            className="grid size-9 place-items-center cursor-pointer rounded-lg border border-slate-200 transition hover:border-primary hover:text-primary"
             onClick={() => setMenuOpen(false)}
             type="button"
           >
@@ -119,7 +119,7 @@ export default function Navbar() {
             {label}
           </a>
         ))}
-        <button className="mt-5 h-11 rounded-lg bg-primary text-sm font-bold text-white transition hover:bg-primary-dark" type="button">
+        <button className="mt-5 h-11 cursor-pointer rounded-lg bg-primary text-sm font-bold text-white transition hover:bg-primary-dark" type="button">
           লগইন করুন
         </button>
       </nav>
