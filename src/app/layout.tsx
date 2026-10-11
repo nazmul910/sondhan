@@ -5,6 +5,7 @@ import "@fontsource/noto-sans-bengali/500.css";
 import "@fontsource/noto-sans-bengali/600.css";
 import "@fontsource/noto-sans-bengali/700.css";
 import "./globals.css";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Shondhan | আপনার স্বাস্থ্যসেবার ঠিকানা",
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body>
         <Navbar />
         {children}
+        <Footer/>
       </body>
     </html>
   );

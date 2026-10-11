@@ -17,12 +17,14 @@ const divisions = [
 export default function DivisionSelect({
   className = "",
   showLocationIcon = true,
+  name,
 }: {
   className?: string;
   showLocationIcon?: boolean;
+  name?: string;
 }) {
   return (
-    <Select.Root defaultValue="ঢাকা">
+    <Select.Root defaultValue="ঢাকা" name={name}>
       <Select.Trigger
         aria-label="বিভাগ নির্বাচন করুন"
         className={`group relative inline-flex min-w-0 flex-none items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 text-left font-medium text-slate-700 shadow-sm outline-none transition hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/15 data-[placeholder]:text-slate-500 ${className}`}

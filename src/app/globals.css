@@ -7,6 +7,9 @@
   --color-heading: #17213b;
   --color-text: #536078;
   --color-rating: #f5ae25;
+  --color-blood: #c10f3f;
+  --color-blood-dark: #a10c34;
+  --color-blood-soft: #fff0f3;
   --color-background: #ffffff;
   --font-bengali: "Noto Sans Bengali", sans-serif;
   --container-width: 1280px;
@@ -19,6 +22,9 @@
   --color-primary-soft: var(--color-primary-soft);
   --color-heading: var(--color-heading);
   --color-rating: var(--color-rating);
+  --color-blood: var(--color-blood);
+  --color-blood-dark: var(--color-blood-dark);
+  --color-blood-soft: var(--color-blood-soft);
   --font-sans: var(--font-bengali);
 }
 
@@ -50,9 +56,11 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 :focus-visible {
@@ -115,6 +123,79 @@ a {
   transform: translateX(0);
   transition-delay: 0s;
   visibility: visible;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reusable UI classes (all custom CSS lives here; pages stay Tailwind) */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .hero-gradient {
+    @apply bg-gradient-to-r from-[#effaf7] via-[#f5fbfa] to-[#eef9f6];
+  }
+
+  .card {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-[0_3px_12px_rgba(23,48,64,0.05)];
+  }
+
+  .card-interactive {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg;
+  }
+
+  .section-title {
+    @apply text-[22px] font-bold tracking-tight text-heading;
+  }
+
+  .btn-primary {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-bold text-white transition hover:bg-primary-dark;
+  }
+
+  .btn-outline {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary/60 bg-white px-4 text-center text-sm font-bold text-primary-dark transition hover:border-primary hover:bg-primary hover:text-white;
+  }
+
+  .chip {
+    @apply inline-flex cursor-pointer items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-[13px] font-medium text-slate-700 transition hover:border-primary;
+  }
+
+  .chip-active {
+    @apply border-primary bg-primary font-semibold text-white;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-md bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary-dark;
+  }
+
+  .field {
+    @apply h-11 w-full rounded-[10px] border border-slate-300 bg-white px-3.5 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15;
+  }
+
+  .field-check {
+    @apply size-[18px] cursor-pointer accent-primary;
+  }
+
+  .page-btn {
+    @apply grid h-11 min-w-11 place-items-center rounded-[10px] text-sm transition;
+  }
+
+  .hero-emergency {
+    @apply bg-gradient-to-r from-[#fff1f0] via-[#fff7ed] to-[#fff4e8];
+  }
+
+  .hero-blood {
+    @apply bg-gradient-to-r from-[#fff0f3] via-[#fff6f8] to-[#fdeef2];
+  }
+
+  .btn-blood {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blood px-5 text-sm font-bold text-white transition hover:bg-blood-dark;
+  }
+
+  .btn-danger {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#c83228] px-5 text-sm font-bold text-white transition hover:bg-[#a82a21];
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-2xl bg-slate-200/70;
+  }
 }
 
 @media (max-width: 1279px) {
