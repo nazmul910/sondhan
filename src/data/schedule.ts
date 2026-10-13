@@ -5,5 +5,3 @@ export const defaultSchedule: ScheduleItem[] = [
   { days: "বৃহস্পতিবার", time: "সকাল ১০:০০ – দুপুর ২:০০" },
   { days: "শুক্রবার", time: null },
 ];
-
-export const bookingSlots = ["৫:০০ PM", "৫:৩০ PM", "৬:০০ PM", "৬:৩০ PM", "৭:০০ PM", "৭:৩০ PM"];

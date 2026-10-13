@@ -17,6 +17,7 @@ export default function HospitalProfileHeader({ hospital }: { hospital: Hospital
         <div className="flex flex-wrap gap-2">
           <span className="badge bg-indigo-50 text-indigo-700">{HOSPITAL_TYPE_LABELS[hospital.type]}</span>
           {hospital.facilities.includes("emergency") && <span className="badge bg-red-50 text-red-700">২৪/৭ ইমার্জেন্সি</span>}
+          {hospital.antivenomAvailable && <span className="badge bg-rose-50 text-rose-700">অ্যান্টিভেনম আছে</span>}
         </div>
         <h1 className="text-[clamp(24px,3vw,32px)] font-bold leading-tight text-heading">{hospital.name}</h1>
         <Rating count={hospital.reviewCount} value={hospital.rating} />

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, CalendarDays, Hospital, MapPin, Phone } from "lucide-react";
+import { BadgeCheck, Hospital, MapPin, Phone } from "lucide-react";
 
 import Rating from "@/components/shared/Rating";
 import { SPECIALTY_LABELS } from "@/data/specialties";
@@ -41,10 +41,6 @@ export default function DoctorProfileHeader({ doctor }: { doctor: Doctor }) {
         </p>
 
         <div className="mt-auto flex flex-wrap gap-2.5 pt-2">
-          <a className="btn-primary" href="#booking">
-            <CalendarDays aria-hidden="true" className="size-[18px]" />
-            অ্যাপয়েন্টমেন্ট নিন
-          </a>
           {doctor.phone && (
             <a className="btn-outline" href={`tel:${doctor.phone}`}>
               <Phone aria-hidden="true" className="size-[18px]" />

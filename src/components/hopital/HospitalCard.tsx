@@ -20,7 +20,10 @@ export default function HospitalCard({ hospital }: { hospital: Hospital }) {
           <h3 className="text-sm font-bold leading-snug text-heading sm:text-base">
             <Link href={href}>{hospital.name}</Link>
           </h3>
-          <span className="badge shrink-0 bg-indigo-50 text-indigo-700">{HOSPITAL_TYPE_LABELS[hospital.type]}</span>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span className="badge bg-indigo-50 text-indigo-700">{HOSPITAL_TYPE_LABELS[hospital.type]}</span>
+            {hospital.antivenomAvailable && <span className="badge bg-rose-50 text-rose-700">অ্যান্টিভেনম</span>}
+          </div>
         </div>
         <Rating count={hospital.reviewCount} value={hospital.rating} />
         <p className="flex items-center gap-1.5 text-[13px] text-slate-600">

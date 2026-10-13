@@ -35,7 +35,7 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
           {formatDistance(doctor.distanceKm)}
         </p>
         <Link className="btn-outline mt-auto min-h-9 text-xs sm:text-[13px]" href={href}>
-          অ্যাপয়েন্টমেন্ট নিন
+          বিস্তারিত দেখুন
         </Link>
       </div>
     </article>

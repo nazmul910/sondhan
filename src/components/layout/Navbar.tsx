@@ -21,7 +21,6 @@ const navItems = [
   { label: "হাসপাতাল", href: "/hospitals", Icon: Hospital },
   { label: "অ্যাম্বুলেন্স", href: "/ambulances", Icon: Ambulance },
   { label: "রক্ত ব্যাংক", href: "/blood-bank", Icon: Droplet },
-  // { label: "অ্যাপয়েন্টমেন্ট", href: "/appointments", Icon: CalendarDays },
   { label: "স্বাস্থ্য টিপস", href: "/health-tips", Icon: NotebookTabs },
 ];
 

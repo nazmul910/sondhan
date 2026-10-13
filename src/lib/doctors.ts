@@ -42,7 +42,7 @@ export async function getDoctorById(id: string) {
 }
 
 export async function getDoctorsByHospital(hospitalId: string) {
-  return doctors.filter((d) => d.hospitalId === hospitalId).sort(compareBy("rating"));
+  return doctors.filter((doctor) => doctor.chambers.some((chamber) => chamber.hospitalId === hospitalId)).sort(compareBy("rating"));
 }
 
 export async function getSimilarDoctors(doctor: Doctor, limit = 3) {

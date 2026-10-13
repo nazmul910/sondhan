@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import BookingCard from "@/components/doctor/BookingCard";
 import DoctorAbout from "@/components/doctor/DoctorAbout";
 import DoctorEducation from "@/components/doctor/DoctorEducation";
 import DoctorProfileHeader from "@/components/doctor/DoctorProfileHeader";
@@ -9,7 +8,6 @@ import DoctorSchedule from "@/components/doctor/DoctorSchedule";
 import SimilarDoctors from "@/components/doctor/SimilarDoctors";
 import Breadcrumb from "@/components/shared/Breadcrumb";
 import { sampleReviews } from "@/data/reviews";
-import { bookingSlots } from "@/data/schedule";
 import { SPECIALTY_LABELS } from "@/data/specialties";
 import { getAllDoctorIds, getDoctorById, getSimilarDoctors } from "@/lib/doctors";
 
@@ -26,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${doctor.name} — ${SPECIALTY_LABELS[doctor.specialty]} | Shondhan`,
-    description: `${doctor.name}, ${doctor.hospitalName}। চেম্বার সময়সূচী, রিভিউ ও অ্যাপয়েন্টমেন্ট।`,
+    description: `${doctor.name}, ${doctor.hospitalName}। চেম্বার সময়সূচী ও রিভিউ।`,
   };
 }
 
@@ -41,18 +39,14 @@ export default async function DoctorDetailPage({ params }: Props) {
     <main className="page-container py-8 pb-16">
       <Breadcrumb items={[{ label: "হোম", href: "/" }, { label: "ডাক্তার", href: "/doctors" }, { label: doctor.name }]} />
 
-      <div className="mt-5 lg:flex lg:items-start lg:gap-6">
-        <div className="flex min-w-0 flex-1 flex-col gap-5">
+      <div className="mt-5">
+        <div className="flex min-w-0 flex-col gap-5">
           <DoctorProfileHeader doctor={doctor} />
           <DoctorAbout doctor={doctor} />
           <DoctorEducation items={doctor.education} />
           <DoctorSchedule doctor={doctor} />
           <DoctorReviews count={doctor.reviewCount} rating={doctor.rating} reviews={sampleReviews} />
         </div>
-
-        <aside className="mt-5 lg:sticky lg:top-24 lg:mt-0 lg:w-[340px] lg:shrink-0">
-          <BookingCard doctorId={doctor.id} fee={doctor.fee} slots={bookingSlots} />
-        </aside>
       </div>
 
       <SimilarDoctors doctors={similar} />

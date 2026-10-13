@@ -1,4 +1,6 @@
 import { Search } from "lucide-react";
+import { ShieldPlus, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import DivisionSelect from "@/components/layout/DivisionSelect";
 
 const popularSearches = ["জেনারেল ফিজিশিয়ান", "কার্ডিওলজিস্ট", "গাইনোকোলজিস্ট", "শিশু বিশেষজ্ঞ"];
@@ -63,6 +65,22 @@ export default function HeroSection() {
               </a>
             ))}
           </div>
+
+          <Link
+            className="mt-5 flex w-full max-w-[720px] items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 to-orange-50 p-3.5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-4"
+            href="/antivenom"
+          >
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-rose-100 text-rose-700">
+              <ShieldPlus aria-hidden="true" className="size-6" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <strong className="block text-sm font-bold text-rose-800 sm:text-base">অ্যান্টিভেনম কোথায় পাবেন?</strong>
+              <span className="mt-0.5 block text-xs leading-5 text-slate-600 sm:text-sm">
+                অ্যান্টিভেনম আছে এমন হাসপাতাল খুঁজুন
+              </span>
+            </span>
+            <ArrowRight aria-hidden="true" className="size-5 shrink-0 text-rose-700" />
+          </Link>
         </div>
 
       </div>

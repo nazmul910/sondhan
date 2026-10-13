@@ -1,6 +1,6 @@
 import doctorFemale from "@/assets/home/doctor1.png";
 import doctorMale from "@/assets/home/doctor2.png";
-import type { Doctor, EducationItem } from "@/types/doctor";
+import type { Doctor, DoctorChamber, EducationItem } from "@/types/doctor";
 import { defaultSchedule } from "./schedule";
 
 const aboutPlaceholder = "[ডাক্তারের সংক্ষিপ্ত পরিচিতি, অভিজ্ঞতা ও চিকিৎসার বিষয়সমূহ এখানে থাকবে।]";
@@ -10,6 +10,19 @@ const education = (hospital: string): EducationItem[] => [
   { title: "FCPS / MD", subtitle: "[প্রতিষ্ঠানের নাম] • [সাল]" },
   { title: `কনসাল্ট্যান্ট, ${hospital}`, subtitle: "[শুরুর সাল] – বর্তমান" },
 ];
+
+const chamber = (
+  hospitalId: string,
+  hospitalName: string,
+  address: string,
+  schedule = defaultSchedule,
+): DoctorChamber => ({
+  hospitalId,
+  hospitalName,
+  address,
+  phone: null,
+  schedule,
+});
 
 /**
  * Mock data. Same shape as the future API response, so only `lib/doctors.ts`
@@ -32,6 +45,10 @@ export const doctors: Doctor[] = [
     bmdc: null,
     phone: null,
     fee: null,
+    chambers: [chamber("royal-hospital", "রয়্যাল হাসপাতাল", "মেইন রোড, ধানমন্ডি", [
+      { days: "শনিবার – বৃহস্পতিবার", time: "বিকাল ৫:০০ – রাত ৯:০০" },
+      { days: "শুক্রবার", time: "বিকাল ৫:০০ – রাত ৮:০০" },
+    ])],
     about: aboutPlaceholder,
     topics: ["হৃদরোগ", "উচ্চ রক্তচাপ", "ইসিজি", "ইকো"],
     education: education("রয়্যাল হাসপাতাল"),
@@ -53,6 +70,7 @@ export const doctors: Doctor[] = [
     bmdc: null,
     phone: null,
     fee: null,
+    chambers: [chamber("life-care-hospital", "লাইফ কেয়ার হাসপাতাল", "আকুরটাকুর পাড়া")],
     about: aboutPlaceholder,
     topics: ["গর্ভকালীন সেবা", "প্রসূতি সেবা", "মাসিক সমস্যা"],
     education: education("লাইফ কেয়ার হাসপাতাল"),
@@ -74,6 +92,7 @@ export const doctors: Doctor[] = [
     bmdc: null,
     phone: null,
     fee: null,
+    chambers: [chamber("ibn-sina-hospital", "ইবনে সিনা হাসপাতাল", "মিরপুর রোড")],
     about: aboutPlaceholder,
     topics: ["জ্বর ও সর্দি-কাশি", "ডায়াবেটিস", "সাধারণ চেকআপ"],
     education: education("ইবনে সিনা হাসপাতাল"),
@@ -95,6 +114,7 @@ export const doctors: Doctor[] = [
     bmdc: null,
     phone: null,
     fee: null,
+    chambers: [chamber("popular-diagnostic", "পপুলার ডায়াগনস্টিক", "ধানমন্ডি ২৭")],
     about: aboutPlaceholder,
     topics: ["শিশুর জ্বর", "টিকা", "বৃদ্ধি ও পুষ্টি"],
     education: education("পপুলার ডায়াগনস্টিক"),
@@ -116,6 +136,7 @@ export const doctors: Doctor[] = [
     bmdc: null,
     phone: null,
     fee: null,
+    chambers: [chamber("green-life-hospital", "গ্রিন লাইফ হাসপাতাল", "গ্রিন রোড")],
     about: aboutPlaceholder,
     topics: ["ডায়াবেটিস", "থাইরয়েড", "উচ্চ রক্তচাপ"],
     education: education("গ্রিন লাইফ হাসপাতাল"),
@@ -137,6 +158,13 @@ export const doctors: Doctor[] = [
     bmdc: null,
     phone: null,
     fee: null,
+    chambers: [
+      chamber("royal-hospital", "রয়্যাল হাসপাতাল", "মেইন রোড, ধানমন্ডি"),
+      chamber("green-life-hospital", "গ্রিন লাইফ হাসপাতাল", "গ্রিন রোড", [
+        { days: "রবিবার – বৃহস্পতিবার", time: "সকাল ১০:০০ – দুপুর ১:০০" },
+        { days: "শুক্রবার", time: null },
+      ]),
+    ],
     about: aboutPlaceholder,
     topics: ["গ্যাস্ট্রিক", "লিভার", "সাধারণ রোগ"],
     education: education("রয়্যাল হাসপাতাল"),

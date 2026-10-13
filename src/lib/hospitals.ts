@@ -42,4 +42,8 @@ export async function getHospitalById(id: string) {
   return hospitals.find((h) => h.id === id) ?? null;
 }
 
+export async function getAntivenomHospitals() {
+  return hospitals.filter((hospital) => hospital.antivenomAvailable);
+}
+
 export const getAllHospitalIds = () => hospitals.map((h) => h.id);

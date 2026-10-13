@@ -12,7 +12,7 @@ import ServicePromos from "./ServicePromos";
 
 const doctors: Doctor[] = [
   {
-    id: 1,
+    id: "tanzir-ahmed",
     name: "ডা. তানজীর আহমেদ",
     specialty: "কার্ডিওলজিস্ট",
     rating: "4.8",
@@ -22,7 +22,7 @@ const doctors: Doctor[] = [
     image: doctorTwo,
   },
   {
-    id: 2,
+    id: "nusrat-jahan",
     name: "ডা. নুসরাত জাহান",
     specialty: "গাইনোকোলজিস্ট",
     rating: "4.9",
@@ -32,7 +32,7 @@ const doctors: Doctor[] = [
     image: doctorOne,
   },
   {
-    id: 3,
+    id: "mustafizur-rahman",
     name: "ডা. মুস্তাফিজুর রহমান",
     specialty: "জেনারেল ফিজিশিয়ান",
     rating: "4.7",
@@ -42,7 +42,7 @@ const doctors: Doctor[] = [
     image: doctorTwo,
   },
   {
-    id: 4,
+    id: "samia-islam",
     name: "ডা. সামিয়া ইসলাম",
     specialty: "গাইনোকোলজিস্ট",
     rating: "4.8",
@@ -52,7 +52,7 @@ const doctors: Doctor[] = [
     image: doctorOne,
   },
   {
-    id: 5,
+    id: "mahmud-hasan",
     name: "ডা. মাহমুদ হাসান",
     specialty: "মেডিসিন বিশেষজ্ঞ",
     rating: "4.9",

@@ -25,6 +25,7 @@ export type Hospital = {
   distanceKm: number;
   phone: string | null;
   openHours: string;
+  antivenomAvailable: boolean;
   departments: DepartmentKey[];
   facilities: FacilityKey[];
   services: string[];

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import DoctorGrid from "@/components/doctor/DoctorGrid";
 import HospitalDepartments from "@/components/hopital/HospitalDepartments";
+import HospitalDoctorDirectory from "@/components/hopital/HospitalDoctorDirectory";
 
 import HospitalProfileHeader from "@/components/hopital/HospitalProfileHeader";
 
 import HospitalSidebar from "@/components/hopital/HospitalSidebar";
 import Breadcrumb from "@/components/shared/Breadcrumb";
-import SectionCard from "@/components/shared/SectionCard";
 import { getDoctorsByHospital } from "@/lib/doctors";
 import { getAllHospitalIds, getHospitalById } from "@/lib/hospitals";
 import HospitalInfo from "@/components/hopital/HospitalInfo";
@@ -46,11 +45,7 @@ export default async function HospitalDetailPage({ params }: Props) {
           <HospitalProfileHeader hospital={hospital} />
           <HospitalInfo hospital={hospital} />
           <HospitalDepartments departments={hospital.departments} />
-          {doctors.length > 0 && (
-            <SectionCard title="এই হাসপাতালের ডাক্তারগণ">
-              <DoctorGrid doctors={doctors} resetHref="/doctors" />
-            </SectionCard>
-          )}
+          <HospitalDoctorDirectory doctors={doctors} />
           <HospitalServices services={hospital.services} />
         </div>
 
