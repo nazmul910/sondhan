@@ -54,7 +54,7 @@ export default function Navbar() {
           </span>
           <span className="flex flex-col leading-tight">
             <strong className="text-xl font-bold tracking-tight text-primary-dark lg:text-[22px]">Shondhan</strong>
-            <small className="mt-0.5 whitespace-nowrap text-[9px] md:text-[12px] text-slate-600 max-[380px]:hidden">প্রয়োজনের সময়ে, ভরসার ঠিকানা</small>
+            <small className="mt-0.5 whitespace-nowrap text-[9px] md:text-[12px] text-slate-600 max-[380px]:hidden">প্রয়োজনের সময়, Sondhan তখন</small>
           </span>
         </Link>
 
