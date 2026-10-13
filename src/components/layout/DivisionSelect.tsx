@@ -2,17 +2,7 @@
 
 import * as Select from "@radix-ui/react-select";
 import { Check, ChevronDown, MapPin } from "lucide-react";
-
-const divisions = [
-  "ঢাকা",
-  "চট্টগ্রাম",
-  "রাজশাহী",
-  "খুলনা",
-  "বরিশাল",
-  "সিলেট",
-  "রংপুর",
-  "ময়মনসিংহ",
-];
+import { DIVISIONS } from "@/data/divisions";
 
 export default function DivisionSelect({
   className = "",
@@ -45,7 +35,7 @@ export default function DivisionSelect({
           sideOffset={6}
         >
           <Select.Viewport>
-            {divisions.map((division) => (
+            {DIVISIONS.map((division) => (
               <Select.Item
                 className="relative flex min-h-10 cursor-pointer select-none items-center rounded-lg py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition data-[highlighted]:bg-primary-soft data-[highlighted]:text-primary-dark data-[state=checked]:font-semibold data-[state=checked]:text-primary-dark"
                 key={division}

@@ -78,9 +78,9 @@ export default function Navbar() {
 
         <div className="flex shrink-0 items-center gap-2">
           <DivisionSelect className="max-md:hidden cursor-pointer h-9 w-[104px] text-xs max-[380px]:w-[88px] md:inline-flex sm:w-[118px]" />
-          <button className="hidden cursor-pointer h-9 min-w-[82px] rounded-lg bg-primary px-4 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-md sm:inline-flex sm:items-center sm:justify-center" type="button">
+          <Link className="hidden h-9 min-w-[82px] rounded-lg bg-primary px-4 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-md sm:inline-flex sm:items-center sm:justify-center" href="/login">
             লগইন
-          </button>
+          </Link>
           <button
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "মেনু বন্ধ করুন" : "মেনু খুলুন"}
@@ -134,9 +134,9 @@ export default function Navbar() {
             </Link>
           );
         })}
-        <button className="mt-5 h-11 cursor-pointer rounded-lg bg-primary text-sm font-bold text-white transition hover:bg-primary-dark" type="button">
+        <Link className="mt-5 grid h-11 place-items-center rounded-lg bg-primary text-sm font-bold text-white transition hover:bg-primary-dark" href="/login" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>
           লগইন করুন
-        </button>
+        </Link>
       </nav>
     </header>
   );
