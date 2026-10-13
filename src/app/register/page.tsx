@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <AuthShell showBack>
+    <AuthShell points={["কাছের ডাক্তার ও হাসপাতাল খুঁজুন", "রক্তদাতা হয়ে জীবন বাঁচান", "রিপোর্ট নিরাপদে রাখুন"]} showBack title="Shondhan এ যোগ দিন, সেবা পান সহজে">
       <RegisterForm />
     </AuthShell>
   );
