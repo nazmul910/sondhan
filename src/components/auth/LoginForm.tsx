@@ -2,69 +2,56 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { isValidBdPhone, normalizePhone } from "@/lib/phone";
-import { toBn } from "@/lib/format";
+import { LockKeyhole, Mail } from "lucide-react";
+import AuthField from "./AuthField";
 import AuthHeading from "./AuthHeading";
-import AuthSuccess from "./AuthSuccess";
 import GoogleButton from "./GoogleButton";
-import OtpStep from "./OtpStep";
-import PhoneInput from "./PhoneInput";
 import OrDivider from "./OrDivider";
 
-
-type Step = "phone" | "otp" | "done";
-
-/** Frontend only. The TODO(backend) lines are where the Redux thunks go later. */
 export default function LoginForm() {
-  const [step, setStep] = useState<Step>("phone");
-  const [phone, setPhone] = useState("");
-  const [error, setError] = useState<string>();
+  const [message, setMessage] = useState("");
 
-  const sendOtp = (event: FormEvent<HTMLFormElement>) => {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isValidBdPhone(phone)) {
-      setError("সঠিক মোবাইল নম্বর দিন (যেমন ০১৭XXXXXXXX)");
-      return;
-    }
-    setError(undefined);
-    // TODO(backend): dispatch(sendOtp({ phone: normalizePhone(phone) }))
-    setStep("otp");
+    setMessage("লগইন সুবিধাটি আপাতত ডেমো হিসেবে দেখানো হচ্ছে।");
   };
 
-  if (step === "done") {
-    // TODO(backend): store the session/token, then router.push(next ?? "/")
-    return <AuthSuccess cta="হোমে যান" href="/" text="আপনার অ্যাকাউন্টে সফলভাবে প্রবেশ করেছেন।" title="লগইন সফল হয়েছে" />;
-  }
-
-  if (step === "otp") {
-    return (
-      <OtpStep
-        onBack={() => setStep("phone")}
-        onVerify={() => {
-          // TODO(backend): dispatch(verifyOtp({ phone: normalizePhone(phone), code }))
-          setStep("done");
-        }}
-        phone={`+৮৮${toBn(normalizePhone(phone))}`}
-        submitLabel="যাচাই করে লগইন করুন"
-      />
-    );
-  }
-
   return (
-    <form className="flex flex-col gap-5" noValidate onSubmit={sendOtp}>
-      <AuthHeading text="আপনার মোবাইল নম্বরে একটি OTP পাঠানো হবে।" title="লগইন" />
-      <PhoneInput error={error} id="login-phone" onChange={setPhone} value={phone} />
-      <button className="btn-primary h-11 w-full" type="submit">
-        OTP পাঠান
+    <form className="flex flex-col" onSubmit={submit}>
+      <div className="mb-9">
+        <AuthHeading text="আপনার স্বাস্থ্যসেবা যাত্রা অব্যাহত রাখতে সাইন ইন করুন" title="স্বাগতম" />
+      </div>
+
+      <div className="space-y-5">
+        <AuthField autoComplete="email" icon={Mail} id="login-email" label="ইমেইল" name="email" placeholder="আপনার ইমেইল লিখুন" type="email" />
+        <AuthField autoComplete="current-password" icon={LockKeyhole} id="login-password" label="পাসওয়ার্ড" name="password" placeholder="আপনার পাসওয়ার্ড লিখুন" type="password" />
+      </div>
+
+      <button
+        className="mt-3 self-end text-xs font-medium text-[#477f82]"
+        onClick={() => setMessage("পাসওয়ার্ড পুনরুদ্ধার আপাতত চালু নেই।")}
+        type="button"
+      >
+        পাসওয়ার্ড ভুলে গেছেন?
       </button>
-      <OrDivider />
-      <GoogleButton />
-      <p className="text-center text-sm text-slate-600">
-        নতুন ব্যবহারকারী?{" "}
-        <Link className="font-bold text-primary-dark" href="/register">
-          রেজিস্ট্রেশন করুন
-        </Link>
+
+      <button className="mt-9 min-h-[48px] w-full cursor-pointer rounded-xl bg-[#477f82] text-sm font-bold text-white transition hover:bg-[#3d7073]" type="submit">
+        লগইন
+      </button>
+
+      <p className="mt-5 text-center text-[13px] text-[#888]">
+        অ্যাকাউন্ট নেই?{" "}
+        <Link className="font-bold text-[#477f82]" href="/register">সাইন আপ</Link>
       </p>
+
+      <div className="mt-8">
+        <OrDivider />
+      </div>
+      <div className="mt-7">
+        <GoogleButton />
+      </div>
+
+      {message && <p className="mt-4 text-center text-xs text-slate-500" role="status">{message}</p>}
     </form>
   );
 }

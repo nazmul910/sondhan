@@ -1,14 +1,26 @@
-/** TODO(backend): hook up Google sign-in. */
+"use client";
+
+import { useState } from "react";
+
 export default function GoogleButton() {
+  const [message, setMessage] = useState("");
+
   return (
-    <button
-      className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-2.5 rounded-[10px] border border-slate-300 bg-white text-sm font-semibold text-slate-700 transition hover:border-primary hover:bg-slate-50"
-      type="button"
-    >
-      <span aria-hidden="true" className="grid size-5 place-items-center rounded-full border-2 border-primary text-[11px] font-bold text-primary-dark">
-        G
-      </span>
-      Google দিয়ে চালিয়ে যান
-    </button>
+    <div>
+      <button
+        className="flex min-h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-[#dedede] bg-white text-sm font-medium text-black transition hover:bg-slate-50"
+        onClick={() => setMessage("Google দিয়ে সাইন ইন আপাতত চালু নেই।")}
+        type="button"
+      >
+        <svg aria-hidden="true" className="size-5" viewBox="0 0 48 48">
+          <path fill="#4285F4" d="M48 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h13.49c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.98 37.76 48 31.66 48 24.55Z" />
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.14 1.44-4.89 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z" />
+          <path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.88.93 7.55 2.56 10.78l7.97-6.19Z" />
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z" />
+        </svg>
+        গুগল দিয়ে সাইন ইন করুন
+      </button>
+      {message && <p className="mt-2 text-center text-xs text-slate-500" role="status">{message}</p>}
+    </div>
   );
 }
