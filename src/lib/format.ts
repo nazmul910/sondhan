@@ -9,3 +9,7 @@ export const formatDistance = (km: number) =>
   km < 1 ? `${toBn(Math.round(km * 1000))} মিটার` : `${toBn(km.toFixed(1))} কিমি`;
 
 export const formatFee = (fee: number | null) => (fee === null ? "[ফি]" : `${toBn(fee)} টাকা`);
+
+/** "2026-10-14" -> "১৪ অক্টোবর, ২০২৬". UTC on purpose, so the day never shifts with the timezone. */
+export const formatDate = (iso: string) =>
+  new Intl.DateTimeFormat("bn-BD", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
