@@ -40,3 +40,12 @@ export type Report = {
 
 /** What the upload / edit forms produce. `id`, file info and URL are added by the store. */
 export type ReportDraft = Pick<Report, "title" | "type" | "date" | "provider" | "doctor" | "note">;
+
+export type AppLanguage = "bn" | "en";
+
+export type NotificationKey = "bloodRequests" | "reportReminders" | "newFeatures";
+
+export type AppSettings = {
+  language: AppLanguage;
+  notifications: Record<NotificationKey, boolean>;
+};

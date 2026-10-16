@@ -3,12 +3,21 @@
 import { useState } from "react";
 import { Heart } from "lucide-react";
 
-type Props = { name: string; variant?: "icon" | "button" };
+export type FavoriteControl = { saved: boolean; onToggle: () => void };
 
-export default function FavoriteButton({ name, variant = "icon" }: Props) {
-  const [saved, setSaved] = useState(false);
+type Props = { name: string; variant?: "icon" | "button"; favorite?: FavoriteControl };
+
+export default function FavoriteButton({ name, variant = "icon", favorite }: Props) {
+  const [localSaved, setLocalSaved] = useState(false);
   // TODO: persist to /account/favorites (needs login). Redirect guests to /login.
-  const toggle = () => setSaved((v) => !v);
+  const saved = favorite?.saved ?? localSaved;
+  const toggle = () => {
+    if (favorite) {
+      favorite.onToggle();
+      return;
+    }
+    setLocalSaved((value) => !value);
+  };
   const heart = <Heart aria-hidden="true" className={`size-[17px] ${saved ? "fill-rose-500 text-rose-500" : ""}`} />;
 
   if (variant === "button") {

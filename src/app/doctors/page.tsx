@@ -36,9 +36,9 @@ export default async function DoctorsPage({ searchParams }: { searchParams: Prom
       </PageHero>
 
       <div className="page-container py-9 pb-16 lg:flex lg:items-start lg:gap-6">
-        <Suspense>
+        {/* <Suspense>
           <DoctorFilters query={query} />
-        </Suspense>
+        </Suspense> */}
 
         <section aria-label="ডাক্তারের তালিকা" className="min-w-0 flex-1">
           <ResultsHeader sort={query.sort} total={total} unit="জন ডাক্তার" />

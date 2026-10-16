@@ -1,17 +1,24 @@
 "use client";
 
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { initialFavoriteIds } from "@/data/favorites";
 import { initialProfile } from "@/data/profile";
 import { initialReports } from "@/data/reports";
-import type { Profile, Report, ReportDraft } from "@/types/account";
+import { initialSettings } from "@/data/settings";
+import type { AppSettings, Profile, Report, ReportDraft } from "@/types/account";
 
 type AccountStore = {
   profile: Profile;
   reports: Report[];
+  /** Saved doctor ids, newest first. */
+  favoriteIds: string[];
+  settings: AppSettings;
   updateProfile: (next: Profile) => void;
   addReport: (draft: ReportDraft, file: File) => Report;
   updateReport: (id: string, draft: ReportDraft) => void;
   deleteReport: (id: string) => void;
+  removeFavorite: (doctorId: string) => void;
+  updateSettings: (next: AppSettings) => void;
 };
 
 const AccountContext = createContext<AccountStore | null>(null);
@@ -30,6 +37,8 @@ function revoke(url: string | null) {
 export function AccountProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile>(initialProfile);
   const [reports, setReports] = useState<Report[]>(initialReports);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(initialFavoriteIds);
+  const [settings, setSettings] = useState<AppSettings>(initialSettings);
 
   const updateProfile = (next: Profile) => {
     // TODO(backend): dispatch(updateProfile(next))
@@ -62,8 +71,20 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     setReports((list) => list.filter((r) => r.id !== id));
   };
 
+  const removeFavorite = (doctorId: string) => {
+    // TODO(backend): dispatch(removeFavorite(doctorId))
+    setFavoriteIds((ids) => ids.filter((id) => id !== doctorId));
+  };
+
+  const updateSettings = (next: AppSettings) => {
+    // TODO(backend): dispatch(updateSettings(next))
+    setSettings(next);
+  };
+
   return (
-    <AccountContext.Provider value={{ profile, reports, updateProfile, addReport, updateReport, deleteReport }}>
+    <AccountContext.Provider
+      value={{ profile, reports, favoriteIds, settings, updateProfile, addReport, updateReport, deleteReport, removeFavorite, updateSettings }}
+    >
       {children}
     </AccountContext.Provider>
   );

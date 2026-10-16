@@ -37,9 +37,9 @@ export default async function HospitalsPage({ searchParams }: { searchParams: Pr
       </PageHero>
 
       <div className="page-container py-9 pb-16 lg:flex lg:items-start lg:gap-6">
-        <Suspense>
+        {/* <Suspense>
           <HospitalFilters query={query} />
-        </Suspense>
+        </Suspense> */}
 
         <section aria-label="হাসপাতালের তালিকা" className="min-w-0 flex-1">
           <ResultsHeader sort={query.sort} total={total} unit="টি প্রতিষ্ঠান" />

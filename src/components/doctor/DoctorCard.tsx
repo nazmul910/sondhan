@@ -6,9 +6,9 @@ import Rating from "@/components/shared/Rating";
 import { SPECIALTY_LABELS } from "@/data/specialties";
 import { formatDistance } from "@/lib/format";
 import type { Doctor } from "@/types/doctor";
-import FavoriteButton from "../shared/FavoriteButton";
+import FavoriteButton, { type FavoriteControl } from "../shared/FavoriteButton";
 
-export default function DoctorCard({ doctor }: { doctor: Doctor }) {
+export default function DoctorCard({ doctor, favorite }: { doctor: Doctor; favorite?: FavoriteControl }) {
   const href = `/doctors/${doctor.id}`;
 
   return (
@@ -22,7 +22,7 @@ export default function DoctorCard({ doctor }: { doctor: Doctor }) {
           <h3 className="truncate pt-0.5 text-sm font-bold leading-snug text-heading sm:text-base">
             <Link href={href}>{doctor.name}</Link>
           </h3>
-          <FavoriteButton name={doctor.name} />
+          <FavoriteButton favorite={favorite} name={doctor.name} />
         </div>
         <p className="mt-1 truncate text-[13px] text-slate-500 sm:text-sm">{SPECIALTY_LABELS[doctor.specialty]}</p>
         <Rating className="mt-2" count={doctor.reviewCount} value={doctor.rating} />

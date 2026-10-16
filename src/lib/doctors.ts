@@ -37,6 +37,10 @@ export async function getDoctors(query: DoctorQuery): Promise<DoctorListResult> 
   return paginate(filtered.sort(compareBy(query.sort)), query.page, DOCTORS_PAGE_SIZE);
 }
 
+export async function getAllDoctors() {
+  return [...doctors];
+}
+
 export async function getDoctorById(id: string) {
   return doctors.find((d) => d.id === id) ?? null;
 }
