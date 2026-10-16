@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SiteChrome from "@/components/layout/SiteChrome";
+import ReduxProvider from "@/components/layout/ReduxProvider";
 import "@fontsource/noto-sans-bengali/400.css";
 import "@fontsource/noto-sans-bengali/500.css";
 import "@fontsource/noto-sans-bengali/600.css";
@@ -19,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="bn">
       <body>
-        <SiteChrome>{children}</SiteChrome>
+        <ReduxProvider>
+          <SiteChrome>{children}</SiteChrome>
+        </ReduxProvider>
       </body>
     </html>
   );

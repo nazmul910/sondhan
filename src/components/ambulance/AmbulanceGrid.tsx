@@ -1,10 +1,17 @@
 import EmptyState from "@/components/shared/EmptyState";
-import type { Ambulance } from "@/types/ambulance";
+import { Ambulance as AmbulanceIcon } from "lucide-react";
+import type { ApiAmbulance } from "@/types/ambulance";
 import AmbulanceCard from "./AmbulanceCard";
 
-export default function AmbulanceGrid({ ambulances }: { ambulances: Ambulance[] }) {
+export default function AmbulanceGrid({ ambulances }: { ambulances: ApiAmbulance[] }) {
   if (ambulances.length === 0) {
-    return <EmptyState hint="অন্য ধরন বা এলাকা বেছে নিন।" resetHref="/ambulance" title="কোনো অ্যাম্বুলেন্স পাওয়া যায়নি" />;
+    return (
+      <EmptyState
+        hint="অ্যাম্বুলেন্স সার্ভিসের তথ্য যোগ হলে এখানে দেখা যাবে।"
+        icon={AmbulanceIcon}
+        title="এখনও কোনো অ্যাম্বুলেন্স যোগ করা হয়নি"
+      />
+    );
   }
 
   return (

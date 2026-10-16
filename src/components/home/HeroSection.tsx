@@ -68,7 +68,7 @@ export default function HeroSection() {
 
           <Link
             className="mt-5 flex w-full max-w-[720px] items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 to-orange-50 p-3.5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-4"
-            href="/antivenom"
+            href="/"
           >
             <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-rose-100 text-rose-700">
               <ShieldPlus aria-hidden="true" className="size-6" />

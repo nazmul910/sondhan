@@ -9,6 +9,17 @@ export type Ambulance = {
   open24h: boolean;
 };
 
+export type ApiAmbulance = {
+  id: number;
+  name: string;
+  type: string;
+  district: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
+  away: string | null;
+};
+
 export type AmbulanceQuery = {
   type: AmbulanceType | null;
   area: string | null;

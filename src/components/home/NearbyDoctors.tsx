@@ -1,70 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperInstance } from "swiper";
 import "swiper/css";
-import doctorOne from "@/assets/home/doctor1.png";
-import doctorTwo from "@/assets/home/doctor2.png";
-import DoctorCard, { type Doctor } from "./DoctorCard";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { loadDoctors } from "@/features/doctors/doctorSlice";
+import DoctorApiCard from "@/components/doctor/DoctorApiCard";
 import ServicePromos from "./ServicePromos";
-
-const doctors: Doctor[] = [
-  {
-    id: "tanzir-ahmed",
-    name: "ডা. তানজীর আহমেদ",
-    specialty: "কার্ডিওলজিস্ট",
-    rating: "4.8",
-    reviews: "320",
-    hospital: "রয়্যাল হাসপাতাল",
-    distance: "২.১ কিমি",
-    image: doctorTwo,
-  },
-  {
-    id: "nusrat-jahan",
-    name: "ডা. নুসরাত জাহান",
-    specialty: "গাইনোকোলজিস্ট",
-    rating: "4.9",
-    reviews: "280",
-    hospital: "লাইফ কেয়ার হাসপাতাল",
-    distance: "৩.৪ কিমি",
-    image: doctorOne,
-  },
-  {
-    id: "mustafizur-rahman",
-    name: "ডা. মুস্তাফিজুর রহমান",
-    specialty: "জেনারেল ফিজিশিয়ান",
-    rating: "4.7",
-    reviews: "415",
-    hospital: "ইবনে সিনা হাসপাতাল",
-    distance: "৪.০ কিমি",
-    image: doctorTwo,
-  },
-  {
-    id: "samia-islam",
-    name: "ডা. সামিয়া ইসলাম",
-    specialty: "গাইনোকোলজিস্ট",
-    rating: "4.8",
-    reviews: "290",
-    hospital: "পপুলার ডায়াগনস্টিক",
-    distance: "৩.৮ কিমি",
-    image: doctorOne,
-  },
-  {
-    id: "mahmud-hasan",
-    name: "ডা. মাহমুদ হাসান",
-    specialty: "মেডিসিন বিশেষজ্ঞ",
-    rating: "4.9",
-    reviews: "365",
-    hospital: "গ্রিন লাইফ হাসপাতাল",
-    distance: "২.৯ কিমি",
-    image: doctorTwo,
-  },
-];
 
 export default function NearbyDoctors() {
   const swiperRef = useRef<SwiperInstance | null>(null);
+  const dispatch = useAppDispatch();
+  const { items: doctors, loading, error } = useAppSelector((state) => state.doctors);
+
+  useEffect(() => {
+    dispatch(loadDoctors({}));
+  }, [dispatch]);
 
   return (
     <>
@@ -74,13 +28,13 @@ export default function NearbyDoctors() {
             <h2 className="text-2xl font-bold tracking-tight text-heading sm:text-[28px]" id="doctors-title">
               কাছাকাছি ডাক্তার
             </h2>
-            <a
+            <Link
               className="inline-flex items-center gap-2 text-base font-bold text-primary-dark transition hover:gap-3 sm:text-lg"
-              href="#doctors"
+              href="/doctors"
             >
               সব দেখুন
               <ArrowRight aria-hidden="true" className="size-5" />
-            </a>
+            </Link>
           </div>
 
           <div className="relative px-4">
@@ -100,10 +54,27 @@ export default function NearbyDoctors() {
             >
               {doctors.map((doctor) => (
                 <SwiperSlide key={doctor.id}>
-                  <DoctorCard doctor={doctor} />
+                  <DoctorApiCard doctor={doctor} />
                 </SwiperSlide>
               ))}
             </Swiper>
+            {loading && doctors.length === 0 && (
+              <div aria-label="ডাক্তার লোড হচ্ছে" className="absolute inset-0 z-[1] grid grid-cols-1 gap-3 bg-white/80 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {Array.from({ length: 4 }, (_, index) => (
+                  <div className="card min-h-[218px] animate-pulse bg-slate-100" key={index} />
+                ))}
+              </div>
+            )}
+            {error && doctors.length === 0 && (
+              <p className="rounded-xl border border-red-200 bg-red-50 p-5 text-center text-sm text-red-700">
+                ডাক্তারদের তথ্য লোড করা যায়নি: {error}
+              </p>
+            )}
+            {!loading && !error && doctors.length === 0 && (
+              <p className="rounded-xl bg-slate-50 p-5 text-center text-sm text-slate-600">
+                এখনও কোনো ডাক্তার যোগ করা হয়নি।
+              </p>
+            )}
             <button
               aria-label="আগের ডাক্তার"
               className="absolute left-5 top-1/2 z-10 grid size-9 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition hover:border-primary hover:bg-primary hover:text-white sm:size-10"
