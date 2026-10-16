@@ -30,6 +30,7 @@ type BloodBanksResponse = {
 
 const API_URL = "https://dashboard.shondan.org/api/v1/blood-banks";
 const PER_PAGE = 10;
+export const BLOOD_BANK_PAGE_SIZE = PER_PAGE;
 const EMPTY_PAGINATION: BloodBankPagination = {
   total: 0,
   current_page: 1,
@@ -64,4 +65,17 @@ export async function fetchBloodBanks(
   }
 
   return { items: result.data, pagination: result.pagination };
+}
+
+export async function fetchAllBloodBanks(): Promise<BloodBank[]> {
+  const firstPage = await fetchBloodBanks(1);
+  if (firstPage.pagination.last_page <= 1) return firstPage.items;
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: firstPage.pagination.last_page - 1 }, (_, index) =>
+      fetchBloodBanks(index + 2),
+    ),
+  );
+
+  return [...firstPage.items, ...remainingPages.flatMap((page) => page.items)];
 }

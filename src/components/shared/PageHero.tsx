@@ -14,7 +14,7 @@ type Props = {
 export default function PageHero({ crumbs, title, accent, description, children }: Props) {
   return (
     <section className="hero-gradient">
-      <div className="page-container py-8 sm:py-9">
+      <div className="page-container py-8 sm:py-20">
         <Breadcrumb items={crumbs} />
         <h1 className="mt-3 text-[clamp(30px,4vw,44px)] font-bold leading-[1.25] tracking-tight text-heading">
           {title} <span className="text-primary">{accent}</span>
