@@ -27,7 +27,6 @@ export default function ProfilePasswordReset() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
     if (!currentPassword) {
       setError("বর্তমান পাসওয়ার্ড দিন।");
@@ -50,10 +49,9 @@ export default function ProfilePasswordReset() {
       setError("অনুগ্রহ করে প্রথমে লগইন করুন।");
       return;
     }
-
     setLoading(true);
     setError("");
-    setSuccess("");
+    setError("");
 
     try {
       const res = await changePassword(token, {
