@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://dashboard.shondan.org/api/v1";
+import { apiFetch } from "@/api/api";
 
 export interface ApiMedicalFileRecord {
   id: number;
@@ -11,11 +11,8 @@ export interface ApiMedicalFileRecord {
 }
 
 export async function fetchMedicalFiles(token: string): Promise<ApiMedicalFileRecord[]> {
-  const res = await fetch(`${BASE_URL}/files?per_page=100`, {
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+  const res = await apiFetch("files?per_page=100", {
+    token,
     cache: "no-store",
   });
 
@@ -49,12 +46,9 @@ export async function uploadMedicalRecord(
     formData.append("reports[0]", payload.file);
   }
 
-  const res = await fetch(`${BASE_URL}/files`, {
+  const res = await apiFetch("files", {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
     body: formData,
   });
 
@@ -77,12 +71,9 @@ export async function deleteMedicalFile(
   token: string,
   id: number | string
 ): Promise<{ success: boolean; message: string }> {
-  const res = await fetch(`${BASE_URL}/files/${id}`, {
+  const res = await apiFetch(`files/${id}`, {
     method: "DELETE",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
   });
 
   const json = await res.json().catch(() => ({}));

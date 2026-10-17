@@ -1,6 +1,5 @@
 import type { AuthSuccessResponse, ProfileResponse, ApiResponse } from "./types";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://dashboard.shondan.org/api/v1";
+import { apiFetch } from "@/api/api";
 
 function parseErrorMessage(data: ApiResponse, defaultMsg: string): string {
   if (data.errors && typeof data.errors === "object") {
@@ -18,9 +17,8 @@ export async function loginUser(payload: {
   formData.append("email", payload.email);
   formData.append("password", payload.password);
 
-  const res = await fetch(`${BASE_URL}/login`, {
+  const res = await apiFetch("login", {
     method: "POST",
-    headers: { Accept: "application/json" },
     body: formData,
   });
 
@@ -44,9 +42,8 @@ export async function registerUser(payload: {
   formData.append("email", payload.email);
   formData.append("password", payload.password);
 
-  const res = await fetch(`${BASE_URL}/sign-up`, {
+  const res = await apiFetch("sign-up", {
     method: "POST",
-    headers: { Accept: "application/json" },
     body: formData,
   });
 
@@ -59,12 +56,9 @@ export async function registerUser(payload: {
 }
 
 export async function fetchProfile(token: string): Promise<ProfileResponse> {
-  const res = await fetch(`${BASE_URL}/auth/profile`, {
+  const res = await apiFetch("auth/profile", {
     method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
   });
 
   const data: ApiResponse<ProfileResponse["data"]> = await res.json().catch(() => ({}));
@@ -97,12 +91,9 @@ export async function updateProfile(
     formData.append("avatar", payload.avatar);
   }
 
-  const res = await fetch(`${BASE_URL}/auth/profile`, {
+  const res = await apiFetch("auth/profile", {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
     body: formData,
   });
 
@@ -128,12 +119,9 @@ export async function changePassword(
   formData.append("password", payload.password);
   formData.append("password_confirmation", payload.password_confirmation);
 
-  const res = await fetch(`${BASE_URL}/auth/profile/password`, {
+  const res = await apiFetch("auth/profile/password", {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
     body: formData,
   });
 
@@ -147,12 +135,9 @@ export async function changePassword(
 
 export async function logoutUser(token: string): Promise<void> {
   try {
-    await fetch(`${BASE_URL}/auth/logout`, {
+    await apiFetch("auth/logout", {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      token,
     });
   } catch {
     // Ignore network errors on logout
@@ -163,9 +148,8 @@ export async function forgotPassword(email: string): Promise<{ status: boolean; 
   const formData = new FormData();
   formData.append("email", email);
 
-  const res = await fetch(`${BASE_URL}/forgot-password`, {
+  const res = await apiFetch("forgot-password", {
     method: "POST",
-    headers: { Accept: "application/json" },
     body: formData,
   });
 
@@ -185,9 +169,8 @@ export async function verifyOtp(
   formData.append("email", email);
   formData.append("otp", otp);
 
-  const res = await fetch(`${BASE_URL}/verify-otp`, {
+  const res = await apiFetch("verify-otp", {
     method: "POST",
-    headers: { Accept: "application/json" },
     body: formData,
   });
 
@@ -211,9 +194,8 @@ export async function resetPassword(payload: {
   formData.append("password", payload.password);
   formData.append("password_confirmation", payload.password_confirmation);
 
-  const res = await fetch(`${BASE_URL}/reset-password`, {
+  const res = await apiFetch("reset-password", {
     method: "POST",
-    headers: { Accept: "application/json" },
     body: formData,
   });
 

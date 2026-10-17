@@ -5,8 +5,7 @@ import type {
   DoctorDetailResponse,
   WishlistToggleResponse,
 } from "./types";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://dashboard.shondan.org/api/v1";
+import { apiFetch, apiUrl } from "@/api/api";
 
 export async function fetchDoctors(params?: {
   category_id?: number;
@@ -14,14 +13,13 @@ export async function fetchDoctors(params?: {
   latitude?: number;
   longitude?: number;
 }): Promise<ApiDoctorListItem[]> {
-  const url = new URL(`${BASE_URL}/doctors`);
+  const url = new URL(apiUrl("doctors"));
   if (params?.category_id) url.searchParams.set("category_id", String(params.category_id));
   if (params?.search) url.searchParams.set("search", params.search);
   if (params?.latitude) url.searchParams.set("latitude", String(params.latitude));
   if (params?.longitude) url.searchParams.set("longitude", String(params.longitude));
 
-  const res = await fetch(url.toString(), {
-    headers: { Accept: "application/json" },
+  const res = await apiFetch(url.toString(), {
     next: { revalidate: 60 },
   });
 
@@ -35,11 +33,8 @@ export async function fetchDoctorById(
   id: number | string,
   token?: string
 ): Promise<ApiDoctorDetail> {
-  const res = await fetch(`${BASE_URL}/doctors/${id}`, {
-    headers: {
-      Accept: "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+  const res = await apiFetch(`doctors/${id}`, {
+    ...(token ? { token } : {}),
     cache: "no-store",
   });
 
@@ -55,12 +50,9 @@ export async function toggleDoctorWishlist(
   const formData = new FormData();
   formData.append("doctor_id", String(doctorId));
 
-  const res = await fetch(`${BASE_URL}/wishlist/toggle`, {
+  const res = await apiFetch("wishlist/toggle", {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
     body: formData,
   });
 
@@ -73,12 +65,9 @@ export async function toggleDoctorWishlist(
 }
 
 export async function fetchWishlistDoctors(token: string): Promise<ApiDoctorListItem[]> {
-  const res = await fetch(`${BASE_URL}/wishlist/doctors`, {
+  const res = await apiFetch("wishlist/doctors", {
     method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
     cache: "no-store",
   });
 
@@ -101,12 +90,9 @@ export async function rateDoctor(
   const formData = new FormData();
   formData.append("rating", String(rating));
 
-  const res = await fetch(`${BASE_URL}/doctors/${doctorId}/rate`, {
+  const res = await apiFetch(`doctors/${doctorId}/rate`, {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    token,
     body: formData,
   });
 

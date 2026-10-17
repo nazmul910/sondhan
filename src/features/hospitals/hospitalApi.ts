@@ -5,8 +5,8 @@ import type {
   HospitalsListResponse,
   HospitalDetailResponse,
 } from "./types";
+import { apiFetch, apiUrl } from "@/api/api";
 
-const BASE_URL = "https://dashboard.shondan.org/api/v1";
 const EMPTY_PAGINATION: ApiPagination = {
   total: 0,
   current_page: 1,
@@ -23,15 +23,14 @@ export async function fetchHospitals(params?: {
   per_page?: number;
   page?: number;
 }): Promise<{ data: ApiHospitalListItem[]; pagination: HospitalsListResponse["pagination"] }> {
-  const url = new URL(`${BASE_URL}/hospitals`);
+  const url = new URL(apiUrl("hospitals"));
   if (params?.search) url.searchParams.set("search", params.search);
   if (params?.latitude) url.searchParams.set("latitude", String(params.latitude));
   if (params?.longitude) url.searchParams.set("longitude", String(params.longitude));
   if (params?.per_page) url.searchParams.set("per_page", String(params.per_page));
   if (params?.page) url.searchParams.set("page", String(params.page));
 
-  const res = await fetch(url.toString(), {
-    headers: { Accept: "application/json" },
+  const res = await apiFetch(url.toString(), {
     next: { revalidate: 60 },
   });
 
@@ -42,8 +41,7 @@ export async function fetchHospitals(params?: {
 }
 
 export async function fetchHospitalById(id: number | string): Promise<ApiHospitalDetail> {
-  const res = await fetch(`${BASE_URL}/hospitals/${id}`, {
-    headers: { Accept: "application/json" },
+  const res = await apiFetch(`hospitals/${id}`, {
     next: { revalidate: 60 },
   });
 

@@ -16,6 +16,16 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## API configuration
+
+Set the API base URL in `.env.local` when using a different API server:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://dashboard.shondan.org/api/v1
+```
+
+If this variable is omitted, the application uses the URL shown above by default.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

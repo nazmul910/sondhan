@@ -1,4 +1,5 @@
 import type { ApiAmbulance } from "@/types/ambulance";
+import { apiFetch } from "@/api/api";
 
 type AmbulancesResponse = {
   status: boolean;
@@ -15,11 +16,8 @@ type AmbulancesResponse = {
   };
 };
 
-const API_URL = "https://dashboard.shondan.org/api/v1/ambulances";
-
 export async function fetchAmbulances(): Promise<ApiAmbulance[]> {
-  const response = await fetch(API_URL, {
-    headers: { Accept: "application/json" },
+  const response = await apiFetch("ambulances", {
     next: { revalidate: 60 },
   });
 

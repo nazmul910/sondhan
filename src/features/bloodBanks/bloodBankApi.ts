@@ -1,3 +1,5 @@
+import { apiFetch, apiUrl } from "@/api/api";
+
 export type BloodBank = {
   id: number;
   name: string;
@@ -28,7 +30,6 @@ type BloodBanksResponse = {
   pagination: BloodBankPagination;
 };
 
-const API_URL = "https://dashboard.shondan.org/api/v1/blood-banks";
 const PER_PAGE = 10;
 export const BLOOD_BANK_PAGE_SIZE = PER_PAGE;
 const EMPTY_PAGINATION: BloodBankPagination = {
@@ -43,12 +44,11 @@ const EMPTY_PAGINATION: BloodBankPagination = {
 export async function fetchBloodBanks(
   page: number,
 ): Promise<{ items: BloodBank[]; pagination: BloodBankPagination }> {
-  const url = new URL(API_URL);
+  const url = new URL(apiUrl("blood-banks"));
   url.searchParams.set("page", String(page));
   url.searchParams.set("per_page", String(PER_PAGE));
 
-  const response = await fetch(url.toString(), {
-    headers: { Accept: "application/json" },
+  const response = await apiFetch(url.toString(), {
     next: { revalidate: 60 },
   });
 
