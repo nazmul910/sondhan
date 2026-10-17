@@ -7,7 +7,10 @@ import Navbar from "./Navbar";
 
 export default function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isAuthPage = pathname === "/login" || pathname === "/register";
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password";
 
   if (isAuthPage) return children;
 

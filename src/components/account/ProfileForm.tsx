@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, type FormEvent } from "react";
+import { toast } from "sonner";
 import { Camera, Save, Trash2, User, ShieldCheck, Hash, Phone, AlertCircle } from "lucide-react";
-import AccountNotice from "@/components/account/AccountNotice";
 import AvatarDialog from "@/components/account/AvatarDialog";
 import ConfirmDialog from "@/components/account/ConfirmDialog";
 import FormField from "@/components/blood/FormField";
@@ -25,12 +25,11 @@ export default function ProfileForm() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const [errors, setErrors] = useState<Errors>({});
-  const [notice, setNotice] = useState("");
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
 
-  // Sync when user loads
+  // Sync when user loads / updates in Redux
   useEffect(() => {
     if (user) {
       setFirstName(user.first_name || "");
@@ -82,8 +81,10 @@ export default function ProfileForm() {
     );
 
     if (updateUserProfile.fulfilled.match(result)) {
-      setNotice("আপনার প্রোফাইল সফলভাবে সংরক্ষণ করা হয়েছে।");
+      toast.success("প্রোফাইল সফলভাবে সংরক্ষণ হয়েছে।");
       setAvatarFile(null);
+    } else {
+      toast.error(result.error.message || "প্রোফাইল সংরক্ষণ ব্যর্থ হয়েছে।");
     }
   };
 
@@ -99,16 +100,39 @@ export default function ProfileForm() {
     setErrors({});
   };
 
-  const handleAvatarSave = (url: string | null, file?: File | null) => {
-    setAvatarUrl(url);
-    setAvatarFile(file || null);
-    setNotice(url ? "প্রোফাইল ছবি পরিবর্তন করা হয়েছে। পরিবর্তন সংরক্ষণ করতে 'সংরক্ষণ করুন' চাপুন।" : "প্রোফাইল ছবি সরানো হয়েছে।");
+  const handleAvatarSave = async (url: string | null, file?: File | null) => {
+    if (file) {
+      const cleanFirst = (firstName || user?.first_name || "").trim();
+      const cleanLast = (lastName || user?.last_name || "").trim();
+      const cleanEmail = (email || user?.email || "").trim();
+      const cleanBio = (bio || user?.bio || "").trim();
+
+      const result = await dispatch(
+        updateUserProfile({
+          first_name: cleanFirst,
+          last_name: cleanLast,
+          email: cleanEmail,
+          bio: cleanBio,
+          avatar: file,
+        })
+      );
+
+      if (updateUserProfile.fulfilled.match(result)) {
+        setAvatarUrl(result.payload.avatar || url);
+        setAvatarFile(null);
+        toast.success("প্রোফাইল ছবি সফলভাবে আপডেট হয়েছে।");
+      } else {
+        throw new Error(result.error.message || "প্রোফাইল ছবি আপলোড ব্যর্থ হয়েছে");
+      }
+    } else if (url === null) {
+      setAvatarUrl(null);
+      setAvatarFile(null);
+      toast.info("প্রোফাইল ছবি সরানো হয়েছে।");
+    }
   };
 
   return (
     <section className="card p-5 sm:p-8">
-      {notice && <AccountNotice message={notice} onDismiss={() => setNotice("")} />}
-
       {authError && (
         <div className="mb-6 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600" role="alert">
           <AlertCircle className="size-5 shrink-0" />
@@ -117,38 +141,48 @@ export default function ProfileForm() {
       )}
 
       {/* Avatar Header */}
-      <div className="flex items-center gap-5">
+      <div className="flex flex-wrap items-center gap-5">
         <button
           aria-label="প্রোফাইল ছবি পরিবর্তন করুন"
           className="group relative shrink-0 cursor-pointer rounded-full"
           onClick={() => setAvatarOpen(true)}
           type="button"
         >
-          <span className="grid size-20 place-items-center overflow-hidden rounded-full bg-primary-soft text-primary-dark sm:size-[104px]">
+          <span className="grid size-20 place-items-center overflow-hidden rounded-full bg-primary-soft text-primary-dark ring-2 ring-primary/20 sm:size-[104px]">
             {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img alt="" className="size-full object-cover" src={avatarUrl} />
             ) : (
-              <User aria-hidden="true" className="size-10 sm:size-12" strokeWidth={1.8} />
+              <User aria-hidden="true" className="size-10 sm:size-12 text-primary" strokeWidth={1.8} />
             )}
           </span>
-          <span className="absolute right-0 bottom-0 grid size-8 place-items-center rounded-full border-2 border-white bg-primary text-white transition group-hover:bg-primary-dark">
+          <span className="absolute right-0 bottom-0 grid size-8 place-items-center rounded-full border-2 border-white bg-primary text-white shadow transition group-hover:bg-primary-dark">
             <Camera aria-hidden="true" className="size-4" />
           </span>
         </button>
         <div>
           <h2 className="text-lg font-bold text-heading">প্রোফাইল ছবি</h2>
           <p className="mt-0.5 text-[13px] text-slate-500">JPG বা PNG, সর্বোচ্চ ২ এমবি</p>
-          {avatarUrl && (
+          <div className="mt-2 flex flex-wrap items-center gap-2.5">
             <button
-              className="mt-1.5 inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-semibold text-red-600 hover:underline"
+              className="btn-outline h-8 px-3 text-xs font-semibold cursor-pointer"
               onClick={() => setAvatarOpen(true)}
               type="button"
             >
-              <Trash2 aria-hidden="true" className="size-3.5" />
-              ছবি পরিবর্তন / মুছুন
+              <Camera className="size-3.5" />
+              {avatarUrl ? "ছবি পরিবর্তন করুন" : "ছবি যোগ করুন / এডিট"}
             </button>
-          )}
+            {avatarUrl && (
+              <button
+                className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-red-600 hover:underline px-2 py-1"
+                onClick={() => setAvatarOpen(true)}
+                type="button"
+              >
+                <Trash2 aria-hidden="true" className="size-3.5" />
+                ছবি মুছুন
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

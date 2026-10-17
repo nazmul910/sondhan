@@ -75,9 +75,9 @@ export default function UploadForm() {
     if (!open && uploaded) resetForm(); // closed after success: the form starts clean
   };
 
-  const handleUploaded = () => {
+  const handleUploaded = async () => {
     if (!picked) return;
-    addReport(withDefaultTitle(trimDraft(draft)), picked.file);
+    await addReport(withDefaultTitle(trimDraft(draft)), picked.file);
     setUploaded(true);
   };
 

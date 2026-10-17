@@ -93,8 +93,11 @@ export const updateUserProfile = createAsyncThunk(
       const state = getState() as { auth: AuthState };
       const token = state.auth.token;
       if (!token) throw new Error("অনুগ্রহ করে প্রথমে লগইন করুন");
-      const response = await updateProfile(token, payload);
-      return response.data;
+      // Update profile
+      await updateProfile(token, payload);
+      // Re-fetch fresh profile so avatar URL has valid signed params
+      const fresh = await fetchProfile(token);
+      return fresh.data;
     } catch (err: unknown) {
       return rejectWithValue(err instanceof Error ? err.message : "প্রোফাইল আপডেট ব্যর্থ হয়েছে");
     }

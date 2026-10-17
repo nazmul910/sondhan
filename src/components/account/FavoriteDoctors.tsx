@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HeartOff } from "lucide-react";
-import AccountNotice from "@/components/account/AccountNotice";
+import { toast } from "sonner";
 import ConfirmDialog from "@/components/account/ConfirmDialog";
 import DoctorApiCard from "@/components/doctor/DoctorApiCard";
 import type { ApiDoctorListItem } from "@/features/doctors/types";
@@ -15,7 +15,6 @@ export default function FavoriteDoctors() {
   const { wishlistItems, wishlistLoading } = useAppSelector((s) => s.doctors);
   const { token } = useAppSelector((s) => s.auth);
 
-  const [notice, setNotice] = useState("");
   const [target, setTarget] = useState<ApiDoctorListItem | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -32,8 +31,12 @@ export default function FavoriteDoctors() {
 
   const confirmRemove = async () => {
     if (!target || !token) return;
-    await dispatch(toggleWishlist({ doctorId: target.id, token }));
-    setNotice(`${target.name} প্রিয় তালিকা থেকে সরানো হয়েছে।`);
+    try {
+      await dispatch(toggleWishlist({ doctorId: target.id, token }));
+      toast.success(`${target.name} প্রিয় তালিকা থেকে সরানো হয়েছে।`);
+    } catch {
+      toast.error("প্রিয় তালিকা থেকে সরাতে সমস্যা হয়েছে।");
+    }
     setTarget(null);
   };
 
@@ -49,8 +52,6 @@ export default function FavoriteDoctors() {
 
   return (
     <section>
-      {notice && <AccountNotice message={notice} onDismiss={() => setNotice("")} />}
-
       {wishlistItems.length > 0 ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] gap-4">
           {wishlistItems.map((doctor) => (

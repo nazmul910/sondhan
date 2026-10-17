@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, FileText, Upload } from "lucide-react";
+import { CheckCircle2, FileText, Upload, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { REPORT_TYPES } from "@/data/account";
 import { formatFileSize } from "@/lib/files";
@@ -17,44 +18,41 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   file: File;
   draft: ReportDraft;
-  /** Fires once, when the upload has finished. Store the report here. */
-  onUploaded: () => void;
+  /** Fires when the upload is confirmed. Should resolve when upload succeeds, or throw on error. */
+  onUploaded: () => Promise<void> | void;
   /** "আরেকটি আপলোড" */
   onAnother: () => void;
 };
 
-const TICK_MS = 180;
-
-/**
- * confirm -> uploading -> done, all inside one modal.
- * Mount it with a fresh `key` for every attempt so it always starts at "confirm".
- */
 export default function UploadDialog({ open, onOpenChange, file, draft, onUploaded, onAnother }: Props) {
   const [step, setStep] = useState<Step>("confirm");
   const [progress, setProgress] = useState(0);
+  const [errorMsg, setErrorMsg] = useState("");
   const uploading = step === "uploading";
 
-  const finish = useEffectEvent(() => {
-    onUploaded();
-    setStep("done");
-  });
+  const handleStart = async () => {
+    setErrorMsg("");
+    setStep("uploading");
+    setProgress(20);
 
-  useEffect(() => {
-    if (step !== "uploading") return;
+    const timer = setInterval(() => {
+      setProgress((p) => (p < 85 ? p + 12 : p));
+    }, 200);
 
-    // TODO(backend): replace this fake progress with the real multipart upload (XHR / axios onUploadProgress)
-    let value = 0;
-    const timer = window.setInterval(() => {
-      value = Math.min(100, value + 10 + Math.round(Math.random() * 10));
-      setProgress(value);
-      if (value >= 100) {
-        window.clearInterval(timer);
-        finish();
-      }
-    }, TICK_MS);
-
-    return () => window.clearInterval(timer);
-  }, [step]);
+    try {
+      await onUploaded();
+      clearInterval(timer);
+      setProgress(100);
+      setStep("done");
+      toast.success("রিপোর্ট সফলভাবে আপলোড হয়েছে।");
+    } catch (err: unknown) {
+      clearInterval(timer);
+      const msg = err instanceof Error ? err.message : "ফাইল আপলোড ব্যর্থ হয়েছে। আবার চেষ্টা করুন।";
+      setErrorMsg(msg);
+      setStep("confirm");
+      toast.error(msg);
+    }
+  };
 
   return (
     <Dialog onOpenChange={(next) => !uploading && onOpenChange(next)} open={open}>
@@ -67,12 +65,10 @@ export default function UploadDialog({ open, onOpenChange, file, draft, onUpload
         {step === "confirm" && (
           <ConfirmStep
             draft={draft}
+            errorMsg={errorMsg}
             file={file}
             onBack={() => onOpenChange(false)}
-            onStart={() => {
-              setProgress(0);
-              setStep("uploading");
-            }}
+            onStart={handleStart}
           />
         )}
 
@@ -109,7 +105,7 @@ export default function UploadDialog({ open, onOpenChange, file, draft, onUpload
               <DialogDescription>আপনার রিপোর্টটি মেডিকেল রিপোর্ট তালিকায় যোগ করা হয়েছে।</DialogDescription>
             </div>
             <DialogFooter>
-              <button className="btn-outline h-11 px-6" onClick={onAnother} type="button">
+              <button className="btn-outline h-11 px-6 cursor-pointer" onClick={onAnother} type="button">
                 আরেকটি আপলোড
               </button>
               <Link className="btn-primary h-11 px-6" href="/account/reports">
@@ -123,14 +119,32 @@ export default function UploadDialog({ open, onOpenChange, file, draft, onUpload
   );
 }
 
-/** Separate component on purpose: it only renders while the modal is open (draft.date can still be empty before that). */
-function ConfirmStep({ file, draft, onBack, onStart }: { file: File; draft: ReportDraft; onBack: () => void; onStart: () => void }) {
+function ConfirmStep({
+  file,
+  draft,
+  errorMsg,
+  onBack,
+  onStart,
+}: {
+  file: File;
+  draft: ReportDraft;
+  errorMsg?: string;
+  onBack: () => void;
+  onStart: () => void;
+}) {
   return (
     <>
       <DialogHeader>
         <DialogTitle>রিপোর্ট আপলোড করবেন?</DialogTitle>
         <DialogDescription>আপলোড করার আগে তথ্যগুলো একবার দেখে নিন।</DialogDescription>
       </DialogHeader>
+
+      {errorMsg && (
+        <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-600">
+          <AlertCircle className="size-4 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
 
       <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
         <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-blue-50 text-blue-600">
@@ -158,10 +172,10 @@ function ConfirmStep({ file, draft, onBack, onStart }: { file: File; draft: Repo
       </dl>
 
       <DialogFooter>
-        <button className="btn-outline h-11 px-6" onClick={onBack} type="button">
+        <button className="btn-outline h-11 px-6 cursor-pointer" onClick={onBack} type="button">
           ফিরে যান
         </button>
-        <button className="btn-primary h-11 px-6" onClick={onStart} type="button">
+        <button className="btn-primary h-11 px-6 cursor-pointer" onClick={onStart} type="button">
           <Upload aria-hidden="true" className="size-4" />
           আপলোড নিশ্চিত করুন
         </button>

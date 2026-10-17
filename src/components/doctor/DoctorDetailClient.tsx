@@ -28,6 +28,7 @@ import SectionCard from "@/components/shared/SectionCard";
 import FavoriteButton from "@/components/shared/FavoriteButton";
 import LoginRequiredDialog from "@/components/auth/LoginRequiredDialog";
 import { toBn } from "@/lib/format";
+import { normalizeImageUrl } from "@/lib/images";
 
 export default function DoctorDetailClient({ id }: { id: string }) {
   const dispatch = useAppDispatch();
@@ -44,6 +45,7 @@ export default function DoctorDetailClient({ id }: { id: string }) {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [loginModalContext, setLoginModalContext] = useState<"wishlist" | "rating">("wishlist");
   const [selectedRating, setSelectedRating] = useState<number>(5);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     dispatch(loadDoctorById({ id, token: token || undefined }));
@@ -122,14 +124,15 @@ export default function DoctorDetailClient({ id }: { id: string }) {
       {/* Profile Header */}
       <section className="card flex flex-wrap gap-6 p-5 sm:p-6">
         <div className="relative h-[250px] w-[200px] shrink-0 overflow-hidden rounded-2xl bg-primary-soft max-sm:mx-auto">
-          {doctor.image_url ? (
+          {doctor.image_url && !imgError ? (
             <Image
               alt={doctor.name}
               className="object-cover object-top"
               fill
               priority
               sizes="200px"
-              src={doctor.image_url}
+              src={normalizeImageUrl(doctor.image_url) || doctor.image_url}
+              onError={() => setImgError(true)}
             />
           ) : (
             <span className="flex h-full w-full items-center justify-center text-primary">

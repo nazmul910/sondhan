@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, User } from "lucide-react";
+import { Camera, LogOut, User } from "lucide-react";
+import { toast } from "sonner";
 import ConfirmDialog from "@/components/account/ConfirmDialog";
+import AvatarDialog from "@/components/account/AvatarDialog";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { logout } from "@/features/auth/authSlice";
+import { logout, updateUserProfile } from "@/features/auth/authSlice";
 import { ACCOUNT_NAV } from "@/data/account";
 import { toBn } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -17,6 +19,7 @@ export default function AccountSidebar() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((s) => s.auth);
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
 
   const fullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "ব্যবহারকারী";
 
@@ -25,20 +28,56 @@ export default function AccountSidebar() {
     router.push("/login");
   };
 
+  const handleAvatarSave = async (url: string | null, file?: File | null) => {
+    if (file && user) {
+      const res = await dispatch(
+        updateUserProfile({
+          first_name: user.first_name || "",
+          last_name: user.last_name || "",
+          email: user.email || "",
+          bio: user.bio || "",
+          avatar: file,
+        })
+      );
+      if (updateUserProfile.fulfilled.match(res)) {
+        toast.success("প্রোফাইল ছবি আপডেট হয়েছে।");
+      } else {
+        throw new Error(res.error.message || "ছবি আপলোড ব্যর্থ হয়েছে");
+      }
+    }
+  };
+
   return (
     <aside aria-label="অ্যাকাউন্ট মেনু" className="card p-4 lg:sticky lg:top-24 lg:p-5">
       <div className="flex items-center gap-3 border-b border-slate-100 pb-4 lg:pb-5">
-        <span className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-full bg-primary-soft text-primary-dark lg:size-[54px]">
+        <button
+          aria-label="প্রোফাইল ছবি পরিবর্তন করুন"
+          className="group relative grid size-12 shrink-0 place-items-center overflow-hidden rounded-full bg-primary-soft text-primary-dark cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition lg:size-[54px]"
+          onClick={() => setAvatarOpen(true)}
+          title="প্রোফাইল ছবি পরিবর্তন করুন"
+          type="button"
+        >
           {user?.avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img alt="" className="size-full object-cover" src={user.avatar} />
           ) : (
-            <User aria-hidden="true" className="size-6" />
+            <User aria-hidden="true" className="size-6 text-primary" />
           )}
-        </span>
-        <div className="min-w-0">
+          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/35 text-white opacity-0 transition group-hover:opacity-100">
+            <Camera className="size-4" />
+          </span>
+        </button>
+        <div className="min-w-0 flex-1">
           <p className="truncate font-bold text-heading">{fullName || "[ব্যবহারকারীর নাম]"}</p>
           <p className="truncate text-[13px] text-slate-500">{user?.email || (user?.phone ? toBn(user.phone) : "")}</p>
+          <button
+            className="mt-0.5 inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-primary hover:underline"
+            onClick={() => setAvatarOpen(true)}
+            type="button"
+          >
+            <Camera className="size-3" />
+            {user?.avatar ? "ছবি পরিবর্তন" : "ছবি যোগ করুন"}
+          </button>
         </div>
       </div>
 
@@ -83,6 +122,13 @@ export default function AccountSidebar() {
         open={logoutOpen}
         title="লগআউট করবেন?"
         tone="danger"
+      />
+
+      <AvatarDialog
+        currentUrl={user?.avatar || null}
+        onOpenChange={setAvatarOpen}
+        onSave={handleAvatarSave}
+        open={avatarOpen}
       />
     </aside>
   );

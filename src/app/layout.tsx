@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 import SiteChrome from "@/components/layout/SiteChrome";
 import ReduxProvider from "@/components/layout/ReduxProvider";
 import "@fontsource/noto-sans-bengali/400.css";
@@ -23,6 +24,12 @@ export default function RootLayout({
         <ReduxProvider>
           <SiteChrome>{children}</SiteChrome>
         </ReduxProvider>
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          duration={4000}
+        />
       </body>
     </html>
   );

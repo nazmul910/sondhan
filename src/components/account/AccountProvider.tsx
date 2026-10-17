@@ -13,6 +13,7 @@ import {
   type ApiMedicalFileRecord,
 } from "@/features/files/filesApi";
 import { toggleWishlist } from "@/features/doctors/doctorSlice";
+import { normalizeImageUrl } from "@/lib/images";
 
 type AccountStore = {
   profile: Profile;
@@ -23,7 +24,7 @@ type AccountStore = {
   updateProfile: (next: Profile) => void;
   addReport: (draft: ReportDraft, file: File) => Promise<Report>;
   updateReport: (id: string, draft: ReportDraft) => void;
-  deleteReport: (id: string) => Promise<void>;
+  deleteReport: (id: string, recordId?: number) => Promise<void>;
   removeFavorite: (doctorId: string) => void;
   updateSettings: (next: AppSettings) => void;
 };
@@ -44,7 +45,8 @@ function mapApiRecordToReports(records: ApiMedicalFileRecord[]): Report[] {
     // Map prescriptions
     record.prescriptions?.forEach((p) => {
       result.push({
-        id: `file-${p.id}`,
+        id: `file-p-${p.id}`,
+        recordId: record.id,
         title: record.visit_purpose || "প্রেসক্রিপশন",
         type: "prescription",
         date: p.created_at ? p.created_at.split("T")[0] : baseDate,
@@ -53,7 +55,7 @@ function mapApiRecordToReports(records: ApiMedicalFileRecord[]): Report[] {
         note: record.visit_purpose || "",
         fileName: `prescription-${p.id}.jpg`,
         fileSize: 1024 * 500,
-        fileUrl: p.file_url,
+        fileUrl: normalizeImageUrl(p.file_url),
         fileMime: "image/jpeg",
       });
     });
@@ -61,7 +63,8 @@ function mapApiRecordToReports(records: ApiMedicalFileRecord[]): Report[] {
     // Map reports
     record.reports?.forEach((r) => {
       result.push({
-        id: `file-${r.id}`,
+        id: `file-r-${r.id}`,
+        recordId: record.id,
         title: record.visit_purpose || "মেডিকেল টেস্ট রিপোর্ট",
         type: "blood-test",
         date: r.created_at ? r.created_at.split("T")[0] : baseDate,
@@ -70,10 +73,29 @@ function mapApiRecordToReports(records: ApiMedicalFileRecord[]): Report[] {
         note: record.visit_purpose || "",
         fileName: `report-${r.id}.jpg`,
         fileSize: 1024 * 800,
-        fileUrl: r.file_url,
+        fileUrl: normalizeImageUrl(r.file_url),
         fileMime: "image/jpeg",
       });
     });
+
+    // If both empty, still show the record
+    if ((!record.prescriptions || record.prescriptions.length === 0) &&
+        (!record.reports || record.reports.length === 0)) {
+      result.push({
+        id: `file-rec-${record.id}`,
+        recordId: record.id,
+        title: record.visit_purpose || "মেডিকেল রেকর্ড",
+        type: "other",
+        date: baseDate,
+        provider: record.hospital_name || "হাসপাতাল",
+        doctor: record.doctor_name || "ডাক্তার",
+        note: record.visit_purpose || "",
+        fileName: `record-${record.id}`,
+        fileSize: 0,
+        fileUrl: null,
+        fileMime: "application/octet-stream",
+      });
+    }
   });
 
   return result.sort(byNewest);
@@ -112,7 +134,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     if (!token) return;
     fetchMedicalFiles(token)
       .then((records) => {
-        if (records.length > 0) {
+        if (records && Array.isArray(records) && records.length > 0) {
           setReports(mapApiRecordToReports(records));
         }
       })
@@ -129,7 +151,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   };
 
   const addReport = async (draft: ReportDraft, file: File): Promise<Report> => {
-    const report: Report = {
+    const localReport: Report = {
       ...draft,
       id: `r${Date.now()}`,
       fileName: file.name,
@@ -139,38 +161,46 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     };
 
     if (token) {
+      await uploadMedicalRecord(token, {
+        doctor_name: draft.doctor || "ডাক্তার",
+        hospital_name: draft.provider || "হাসপাতাল",
+        visit_purpose: draft.title || "স্বাস্থ্য পরীক্ষা",
+        file,
+        isPrescription: draft.type === "prescription",
+      });
+
       try {
-        await uploadMedicalRecord(token, {
-          doctor_name: draft.doctor || "ডাক্তার",
-          hospital_name: draft.provider || "হাসপাতাল",
-          visit_purpose: draft.title || "স্বাস্থ্য পরীক্ষা",
-          file,
-          isPrescription: draft.type === "prescription",
-        });
+        const records = await fetchMedicalFiles(token);
+        if (records && Array.isArray(records) && records.length > 0) {
+          const fresh = mapApiRecordToReports(records);
+          setReports(fresh);
+          return fresh[0] || localReport;
+        }
       } catch (err) {
-        console.error("File upload error:", err);
+        console.error("Failed to refetch files:", err);
       }
     }
 
-    setReports((list) => [report, ...list].sort(byNewest));
-    return report;
+    setReports((list) => [localReport, ...list].sort(byNewest));
+    return localReport;
   };
 
   const updateReport = (id: string, draft: ReportDraft) => {
     setReports((list) => list.map((r) => (r.id === id ? { ...r, ...draft } : r)).sort(byNewest));
   };
 
-  const deleteReport = async (id: string) => {
-    if (token && id.startsWith("file-")) {
-      const realId = id.replace("file-", "");
-      try {
-        await deleteMedicalFile(token, realId);
-      } catch (err) {
-        console.error("Delete file error:", err);
-      }
+  const deleteReport = async (id: string, recordId?: number) => {
+    const targetReport = reports.find((r) => r.id === id);
+    const targetRecordId = recordId ?? targetReport?.recordId;
+
+    if (token && targetRecordId) {
+      await deleteMedicalFile(token, targetRecordId);
     }
-    revoke(reports.find((r) => r.id === id)?.fileUrl ?? null);
-    setReports((list) => list.filter((r) => r.id !== id));
+
+    revoke(targetReport?.fileUrl ?? null);
+    setReports((list) =>
+      list.filter((r) => (targetRecordId ? r.recordId !== targetRecordId && r.id !== id : r.id !== id))
+    );
   };
 
   const removeFavorite = (doctorId: string) => {

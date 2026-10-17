@@ -146,11 +146,20 @@ const doctorSlice = createSlice({
     // toggleWishlist
     builder.addCase(toggleWishlist.fulfilled, (state, action) => {
       const { doctorId, is_wishlisted } = action.payload;
-      if (state.selectedDoctor && state.selectedDoctor.id === doctorId) {
+      if (state.selectedDoctor && Number(state.selectedDoctor.id) === Number(doctorId)) {
         state.selectedDoctor.is_wishlisted = is_wishlisted;
       }
       if (!is_wishlisted) {
-        state.wishlistItems = state.wishlistItems.filter((d) => d.id !== doctorId);
+        state.wishlistItems = state.wishlistItems.filter((d) => Number(d.id) !== Number(doctorId));
+      } else {
+        const found =
+          state.items.find((d) => Number(d.id) === Number(doctorId)) ||
+          (state.selectedDoctor && Number(state.selectedDoctor.id) === Number(doctorId) ? state.selectedDoctor : null);
+        if (found && !state.wishlistItems.some((d) => Number(d.id) === Number(doctorId))) {
+          state.wishlistItems.push(found as any);
+        } else if (!state.wishlistItems.some((d) => Number(d.id) === Number(doctorId))) {
+          state.wishlistItems.push({ id: Number(doctorId), name: "ডাক্তার" } as any);
+        }
       }
     });
 

@@ -4,11 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Clock3, Stethoscope } from "lucide-react";
+import { toast } from "sonner";
 import type { ApiDoctorListItem } from "@/features/doctors/types";
 import FavoriteButton from "@/components/shared/FavoriteButton";
 import LoginRequiredDialog from "@/components/auth/LoginRequiredDialog";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { toggleWishlist } from "@/features/doctors/doctorSlice";
+import { normalizeImageUrl } from "@/lib/images";
 
 export default function DoctorApiCard({
   doctor,
@@ -22,7 +24,9 @@ export default function DoctorApiCard({
   const { isAuthenticated, token } = useAppSelector((s) => s.auth);
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
+  const imageUrl = normalizeImageUrl(doctor.image_url);
   const href = `/doctors/${doctor.id}`;
   const isWishlisted = wishlistItems.some((d) => d.id === doctor.id);
 
@@ -34,7 +38,17 @@ export default function DoctorApiCard({
     if (onRemoveFavorite) {
       onRemoveFavorite(doctor.id);
     } else {
-      dispatch(toggleWishlist({ doctorId: doctor.id, token }));
+      dispatch(toggleWishlist({ doctorId: doctor.id, token }))
+        .then((res) => {
+          if (toggleWishlist.fulfilled.match(res)) {
+            const added = res.payload.is_wishlisted;
+            toast.success(
+              added
+                ? `${doctor.name} প্রিয় তালিকায় যোগ হয়েছে।`
+                : `${doctor.name} প্রিয় তালিকা থেকে সরানো হয়েছে।`
+            );
+          }
+        });
     }
   };
 
@@ -57,13 +71,14 @@ export default function DoctorApiCard({
         className="relative h-[156px] w-[104px] shrink-0 overflow-hidden rounded-xl bg-primary-soft sm:h-[164px] sm:w-[116px]"
         href={href}
       >
-        {doctor.image_url ? (
+        {imageUrl && !imgError ? (
           <Image
             alt={doctor.name}
             className="object-cover object-top"
             fill
             sizes="(max-width: 600px) 104px, 116px"
-            src={doctor.image_url}
+            src={imageUrl}
+            onError={() => setImgError(true)}
           />
         ) : (
           <span className="flex h-full w-full items-center justify-center text-primary">
@@ -73,12 +88,14 @@ export default function DoctorApiCard({
       </Link>
 
       {/* Info */}
-      <div className="flex min-w-0 flex-1 flex-col pr-7">
-        <h3 className="truncate pt-0.5 text-sm font-bold leading-snug text-heading sm:text-base">
-          <Link href={href}>{doctor.name}</Link>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <h3 className="truncate pt-0.5 pr-7 text-sm font-bold leading-snug text-heading sm:text-base">
+          <Link className="hover:text-primary transition" href={href}>
+            {doctor.name}
+          </Link>
         </h3>
 
-        <p className="mt-1 truncate text-[13px] text-slate-500 sm:text-sm">
+        <p className="mt-1 truncate pr-7 text-[13px] text-slate-500 sm:text-sm">
           {doctor.specialization}
         </p>
 
@@ -98,7 +115,10 @@ export default function DoctorApiCard({
           {doctor.experience}
         </p>
 
-        <Link className="btn-outline mt-auto min-h-9 text-xs sm:text-[13px]" href={href}>
+        <Link
+          className="btn-outline mt-auto min-h-9 w-full justify-center px-2 text-center text-xs font-bold whitespace-nowrap cursor-pointer sm:text-[13px]"
+          href={href}
+        >
           বিস্তারিত দেখুন
         </Link>
       </div>

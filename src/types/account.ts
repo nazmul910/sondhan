@@ -23,6 +23,7 @@ export type ReportFilter = "all" | ReportType;
 
 export type Report = {
   id: string;
+  recordId?: number;
   title: string;
   type: ReportType;
   /** "YYYY-MM-DD" */

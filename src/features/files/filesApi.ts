@@ -11,7 +11,7 @@ export interface ApiMedicalFileRecord {
 }
 
 export async function fetchMedicalFiles(token: string): Promise<ApiMedicalFileRecord[]> {
-  const res = await fetch(`${BASE_URL}/files`, {
+  const res = await fetch(`${BASE_URL}/files?per_page=100`, {
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
@@ -60,13 +60,23 @@ export async function uploadMedicalRecord(
 
   const json = await res.json().catch(() => ({}));
   if (!res.ok || json.success === false) {
-    throw new Error(json.message || "ফাইল আপলোড ব্যর্থ হয়েছে");
+    let errMsg = json.message || "ফাইল আপলোড ব্যর্থ হয়েছে";
+    if (json.errors && typeof json.errors === "object") {
+      const firstKey = Object.keys(json.errors)[0];
+      if (firstKey && Array.isArray(json.errors[firstKey])) {
+        errMsg = json.errors[firstKey][0];
+      }
+    }
+    throw new Error(errMsg);
   }
 
   return { success: true, message: json.message || "ফাইল সফলভাবে আপলোড হয়েছে।" };
 }
 
-export async function deleteMedicalFile(token: string, id: number | string): Promise<{ success: boolean; message: string }> {
+export async function deleteMedicalFile(
+  token: string,
+  id: number | string
+): Promise<{ success: boolean; message: string }> {
   const res = await fetch(`${BASE_URL}/files/${id}`, {
     method: "DELETE",
     headers: {
