@@ -54,11 +54,24 @@ export interface DoctorDetailResponse {
   };
 }
 
+export interface WishlistToggleResponse {
+  success: boolean;
+  message: string;
+  data: {
+    is_wishlisted: boolean;
+  };
+}
+
 export interface DoctorsState {
   items: ApiDoctorListItem[];
+  wishlistItems: ApiDoctorListItem[];
   selectedDoctor: ApiDoctorDetail | null;
   loading: boolean;
   detailLoading: boolean;
+  wishlistLoading: boolean;
   error: string | null;
   detailError: string | null;
+  rateLoading: boolean;
+  rateSuccess: string | null;
+  rateError: string | null;
 }

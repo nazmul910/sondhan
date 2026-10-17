@@ -1,25 +1,90 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { loadDoctorById, clearSelectedDoctor } from "@/features/doctors/doctorSlice";
-import { BadgeCheck, Hospital, MapPin, Phone, Stethoscope, Clock3, Users, Star } from "lucide-react";
+import {
+  loadDoctorById,
+  clearSelectedDoctor,
+  toggleWishlist,
+  submitDoctorRating,
+  clearRateNotice,
+} from "@/features/doctors/doctorSlice";
+import {
+  BadgeCheck,
+  Hospital,
+  MapPin,
+  Phone,
+  Stethoscope,
+  Clock3,
+  Users,
+  Star,
+  CheckCircle2,
+  AlertCircle,
+  LogIn,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import SectionCard from "@/components/shared/SectionCard";
+import FavoriteButton from "@/components/shared/FavoriteButton";
+import LoginRequiredDialog from "@/components/auth/LoginRequiredDialog";
+import { toBn } from "@/lib/format";
 
 export default function DoctorDetailClient({ id }: { id: string }) {
   const dispatch = useAppDispatch();
-  const { selectedDoctor: doctor, detailLoading: loading, detailError: error } = useAppSelector(
-    (s) => s.doctors
-  );
+  const {
+    selectedDoctor: doctor,
+    detailLoading: loading,
+    detailError: error,
+    rateLoading,
+    rateSuccess,
+    rateError,
+  } = useAppSelector((s) => s.doctors);
+  const { isAuthenticated, token } = useAppSelector((s) => s.auth);
+
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginModalContext, setLoginModalContext] = useState<"wishlist" | "rating">("wishlist");
+  const [selectedRating, setSelectedRating] = useState<number>(5);
 
   useEffect(() => {
-    dispatch(loadDoctorById({ id }));
+    dispatch(loadDoctorById({ id, token: token || undefined }));
     return () => {
       dispatch(clearSelectedDoctor());
+      dispatch(clearRateNotice());
     };
-  }, [dispatch, id]);
+  }, [dispatch, id, token]);
+
+  const handleToggleWishlist = () => {
+    if (!isAuthenticated || !token) {
+      setLoginModalContext("wishlist");
+      setLoginModalOpen(true);
+      return;
+    }
+    if (doctor) {
+      dispatch(toggleWishlist({ doctorId: doctor.id, token }));
+    }
+  };
+
+  const handleRatingSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated || !token) {
+      setLoginModalContext("rating");
+      setLoginModalOpen(true);
+      return;
+    }
+    if (doctor) {
+      const result = await dispatch(
+        submitDoctorRating({
+          doctorId: doctor.id,
+          rating: selectedRating,
+          token,
+        })
+      );
+      if (submitDoctorRating.fulfilled.match(result)) {
+        // Refresh doctor data to show updated rating
+        dispatch(loadDoctorById({ id, token }));
+      }
+    }
+  };
 
   // ── Error ───────────────────────────────────────────────────────────────────
   if (error) {
@@ -90,7 +155,7 @@ export default function DoctorDetailClient({ id }: { id: string }) {
 
           {/* Stats row */}
           <div className="mt-1 flex flex-wrap gap-4 text-sm text-slate-600">
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 font-semibold">
               <Star className="size-4 fill-amber-400 text-amber-400" />
               {doctor.rating} রেটিং
             </span>
@@ -104,13 +169,21 @@ export default function DoctorDetailClient({ id }: { id: string }) {
             </span>
           </div>
 
-          <div className="mt-auto flex flex-wrap gap-2.5 pt-2">
+          <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-2">
             {doctor.phone && (
               <a className="btn-outline" href={`tel:${doctor.phone}`}>
                 <Phone aria-hidden="true" className="size-[18px]" />
                 কল করুন
               </a>
             )}
+            <FavoriteButton
+              favorite={{
+                saved: !!doctor.is_wishlisted,
+                onToggle: handleToggleWishlist,
+              }}
+              name={doctor.name}
+              variant="button"
+            />
           </div>
         </div>
       </section>
@@ -169,6 +242,120 @@ export default function DoctorDetailClient({ id }: { id: string }) {
           </div>
         </SectionCard>
       )}
+
+      {/* Doctor Rating & Review Section */}
+      <SectionCard title="রেটিং ও মতামত">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="grid size-16 place-items-center rounded-2xl bg-amber-50 text-2xl font-bold text-amber-600">
+              {doctor.rating}
+            </div>
+            <div>
+              <div className="flex gap-1 text-amber-400">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star
+                    className={`size-5 ${
+                      s <= Math.round(Number(doctor.rating) || 5)
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-slate-300"
+                    }`}
+                    key={s}
+                  />
+                ))}
+              </div>
+              <p className="mt-1 text-xs text-slate-500">
+                ডাক্তারের সামগ্রিক চিকিৎসা সেবা রেটিং
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Rating Submission Form */}
+        <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50/70 p-4 sm:p-5">
+          <h3 className="text-sm font-bold text-heading">ডাক্তারকে রেটিং দিন</h3>
+
+          {rateSuccess && (
+            <div className="mt-3 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-700">
+              <CheckCircle2 className="size-4 shrink-0" />
+              <span>{rateSuccess}</span>
+            </div>
+          )}
+
+          {rateError && (
+            <div className="mt-3 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-600">
+              <AlertCircle className="size-4 shrink-0" />
+              <span>{rateError}</span>
+            </div>
+          )}
+
+          {!isAuthenticated ? (
+            <div className="mt-3 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-slate-600">
+                ডাক্তারকে রেটিং প্রদান করার জন্য অনুগ্রহ করে আপনার অ্যাকাউন্টে লগইন করুন।
+              </p>
+              <button
+                className="btn-primary h-9 px-4 text-xs"
+                onClick={() => {
+                  setLoginModalContext("rating");
+                  setLoginModalOpen(true);
+                }}
+                type="button"
+              >
+                <LogIn className="size-3.5" />
+                লগইন করুন
+              </button>
+            </div>
+          ) : (
+            <form className="mt-3 space-y-4" onSubmit={handleRatingSubmit}>
+              <div>
+                <span className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  আপনার স্টার রেটিং নির্বাচন করুন (১ থেকে ৫):
+                </span>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      aria-label={`${toBn(star)} তারা`}
+                      className="cursor-pointer rounded-lg p-1 transition hover:scale-110"
+                      key={star}
+                      onClick={() => setSelectedRating(star)}
+                      type="button"
+                    >
+                      <Star
+                        className={`size-7 ${
+                          star <= selectedRating
+                            ? "fill-amber-400 text-amber-400"
+                            : "text-slate-300"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                className="btn-primary h-10 px-5 text-xs font-bold disabled:opacity-60"
+                disabled={rateLoading}
+                type="submit"
+              >
+                {rateLoading ? "জমা হচ্ছে..." : "রেটিং জমা দিন"}
+              </button>
+            </form>
+          )}
+        </div>
+      </SectionCard>
+
+      {/* Login Required Dialog */}
+      <LoginRequiredDialog
+        description={
+          loginModalContext === "wishlist"
+            ? "ডাক্তারকে প্রিয় তালিকায় যোগ বা অপসারণ করতে অনুগ্রহ করে প্রথমে আপনার অ্যাকাউন্টে লগইন করুন।"
+            : "ডাক্তারকে রেটিং প্রদান করতে অনুগ্রহ করে প্রথমে আপনার অ্যাকাউন্টে লগইন করুন।"
+        }
+        onOpenChange={setLoginModalOpen}
+        open={loginModalOpen}
+        redirectUrl={`/doctors/${doctor.id}`}
+        title={loginModalContext === "wishlist" ? "প্রিয় তালিকায় যোগ করতে লগইন করুন" : "রেটিং দিতে লগইন করুন"}
+      />
     </div>
   );
 }

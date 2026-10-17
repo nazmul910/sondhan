@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, User } from "lucide-react";
 import ConfirmDialog from "@/components/account/ConfirmDialog";
-import { useAccount } from "@/components/account/AccountProvider";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { logout } from "@/features/auth/authSlice";
 import { ACCOUNT_NAV } from "@/data/account";
 import { toBn } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -13,11 +14,14 @@ import { cn } from "@/lib/utils";
 export default function AccountSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { profile } = useAccount();
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((s) => s.auth);
   const [logoutOpen, setLogoutOpen] = useState(false);
 
-  const logout = () => {
-    // TODO(backend): dispatch(logout()) then clear the session
+  const fullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "ব্যবহারকারী";
+
+  const handleLogout = async () => {
+    await dispatch(logout());
     router.push("/login");
   };
 
@@ -25,16 +29,16 @@ export default function AccountSidebar() {
     <aside aria-label="অ্যাকাউন্ট মেনু" className="card p-4 lg:sticky lg:top-24 lg:p-5">
       <div className="flex items-center gap-3 border-b border-slate-100 pb-4 lg:pb-5">
         <span className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-full bg-primary-soft text-primary-dark lg:size-[54px]">
-          {profile.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- blob/user URL, next/image cannot optimise it
-            <img alt="" className="size-full object-cover" src={profile.avatarUrl} />
+          {user?.avatar ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt="" className="size-full object-cover" src={user.avatar} />
           ) : (
             <User aria-hidden="true" className="size-6" />
           )}
         </span>
         <div className="min-w-0">
-          <p className="truncate font-bold text-heading">{profile.name || "[ব্যবহারকারীর নাম]"}</p>
-          <p className="truncate text-[13px] text-slate-500">{toBn(`+88${profile.phone}`)}</p>
+          <p className="truncate font-bold text-heading">{fullName || "[ব্যবহারকারীর নাম]"}</p>
+          <p className="truncate text-[13px] text-slate-500">{user?.email || (user?.phone ? toBn(user.phone) : "")}</p>
         </div>
       </div>
 
@@ -72,9 +76,9 @@ export default function AccountSidebar() {
 
       <ConfirmDialog
         confirmLabel="লগআউট করুন"
-        description="লগআউট করলে আবার আপনার মোবাইল নম্বর দিয়ে লগইন করতে হবে।"
+        description="লগআউট করলে পরবর্তীতে অ্যাকাউন্ট ব্যবহারের জন্য আবার লগইন করতে হবে।"
         icon={<LogOut aria-hidden="true" className="size-6" />}
-        onConfirm={logout}
+        onConfirm={handleLogout}
         onOpenChange={setLogoutOpen}
         open={logoutOpen}
         title="লগআউট করবেন?"

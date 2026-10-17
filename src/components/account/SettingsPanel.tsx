@@ -1,88 +1,190 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronRight, LogOut, Trash2 } from "lucide-react";
+import { ChevronRight, KeyRound, LogOut, LockKeyhole, AlertCircle, CheckCircle2 } from "lucide-react";
 import AccountNotice from "@/components/account/AccountNotice";
-import { useAccount } from "@/components/account/AccountProvider";
 import ConfirmDialog from "@/components/account/ConfirmDialog";
 import SectionCard from "@/components/shared/SectionCard";
-import { LANGUAGE_OPTIONS, NOTIFICATION_OPTIONS, SETTINGS_LINKS } from "@/data/settings";
+import FormField from "@/components/blood/FormField";
+import { SETTINGS_LINKS } from "@/data/settings";
 import { cn } from "@/lib/utils";
-import type { AppLanguage, NotificationKey } from "@/types/account";
-
-type Dialog = "logout" | "delete" | null;
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { logout } from "@/features/auth/authSlice";
+import { changePassword } from "@/features/auth/authApi";
 
 export default function SettingsPanel() {
   const router = useRouter();
-  const { settings, updateSettings } = useAccount();
+  const dispatch = useAppDispatch();
+  const { token } = useAppSelector((s) => s.auth);
+
   const [notice, setNotice] = useState("");
-  const [dialog, setDialog] = useState<Dialog>(null);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
-  const close = (next: Exclude<Dialog, null>) => (open: boolean) => {
-    if (!open && dialog === next) setDialog(null);
+  // Password change states
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwError, setPwError] = useState("");
+  const [pwSuccess, setPwSuccess] = useState("");
+
+  // Language state (matches Postman /v1/languages: English, Bengali, Arabic)
+  const [selectedLang, setSelectedLang] = useState<"bn" | "en" | "ar">("bn");
+
+  const handlePasswordChange = async (e: FormEvent) => {
+    e.preventDefault();
+    setPwError("");
+    setPwSuccess("");
+
+    if (!currentPassword) {
+      setPwError("বর্তমান পাসওয়ার্ড দিন।");
+      return;
+    }
+    if (!newPassword || newPassword.length < 6) {
+      setPwError("নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPwError("নতুন পাসওয়ার্ড ও নিশ্চিতকরণ পাসওয়ার্ড মিলছে না।");
+      return;
+    }
+    if (!token) {
+      setPwError("অনুগ্রহ করে প্রথমে লগইন করুন।");
+      return;
+    }
+
+    setPwLoading(true);
+    try {
+      const res = await changePassword(token, {
+        current_password: currentPassword,
+        password: newPassword,
+        password_confirmation: confirmPassword,
+      });
+      setPwSuccess(res.message);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: unknown) {
+      setPwError(err instanceof Error ? err.message : "পাসওয়ার্ড পরিবর্তন করা যায়নি।");
+    } finally {
+      setPwLoading(false);
+    }
   };
 
-  const changeLanguage = (language: AppLanguage) => {
-    if (language === settings.language) return;
-    // TODO(i18n): switch the app locale here (only the preference is stored for now)
-    updateSettings({ ...settings, language });
-    setNotice(`অ্যাপের ভাষা ${LANGUAGE_OPTIONS.find((o) => o.value === language)?.label} নির্বাচন করা হয়েছে।`);
-  };
-
-  const toggleNotification = (key: NotificationKey) => {
-    updateSettings({ ...settings, notifications: { ...settings.notifications, [key]: !settings.notifications[key] } });
-    setNotice("নোটিফিকেশন সেটিংস সংরক্ষণ করা হয়েছে।");
-  };
-
-  const logout = () => {
-    // TODO(backend): dispatch(logout()) then clear the session
+  const handleLogout = async () => {
+    await dispatch(logout());
     router.push("/login");
-  };
-
-  const deleteAccount = () => {
-    // TODO(backend): await dispatch(deleteAccount()).unwrap(), then clear the session
-    router.push("/");
   };
 
   return (
     <div className="grid gap-4">
       {notice && <AccountNotice message={notice} onDismiss={() => setNotice("")} />}
 
+      {/* Change Password */}
+      <SectionCard title="পাসওয়ার্ড পরিবর্তন">
+        {pwError && (
+          <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-600">
+            <AlertCircle className="size-4 shrink-0" />
+            <span>{pwError}</span>
+          </div>
+        )}
+        {pwSuccess && (
+          <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-700">
+            <CheckCircle2 className="size-4 shrink-0" />
+            <span>{pwSuccess}</span>
+          </div>
+        )}
+
+        <form className="space-y-4" onSubmit={handlePasswordChange}>
+          <FormField htmlFor="curr-pw" label="বর্তমান পাসওয়ার্ড">
+            <div className="relative">
+              <input
+                autoComplete="current-password"
+                className="field"
+                id="curr-pw"
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="আপনার বর্তমান পাসওয়ার্ড লিখুন"
+                required
+                type="password"
+                value={currentPassword}
+              />
+            </div>
+          </FormField>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField htmlFor="new-pw" label="নতুন পাসওয়ার্ড">
+              <input
+                autoComplete="new-password"
+                className="field"
+                id="new-pw"
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)"
+                required
+                type="password"
+                value={newPassword}
+              />
+            </FormField>
+
+            <FormField htmlFor="confirm-new-pw" label="নতুন পাসওয়ার্ড নিশ্চিত করুন">
+              <input
+                autoComplete="new-password"
+                className="field"
+                id="confirm-new-pw"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="নতুন পাসওয়ার্ড আবার লিখুন"
+                required
+                type="password"
+                value={confirmPassword}
+              />
+            </FormField>
+          </div>
+
+          <button
+            className="btn-primary h-11 px-6 disabled:opacity-60"
+            disabled={pwLoading}
+            type="submit"
+          >
+            <KeyRound aria-hidden="true" className="size-4" />
+            {pwLoading ? "পরিবর্তন হচ্ছে..." : "পাসওয়ার্ড আপডেট করুন"}
+          </button>
+        </form>
+      </SectionCard>
+
+      {/* App Language */}
       <SectionCard title="অ্যাপের ভাষা">
-        <div aria-label="অ্যাপের ভাষা" className="grid gap-3 sm:grid-cols-2" role="radiogroup">
-          {LANGUAGE_OPTIONS.map(({ value, label }) => (
+        <div aria-label="অ্যাপের ভাষা" className="grid gap-3 sm:grid-cols-3" role="radiogroup">
+          {[
+            { value: "bn", label: "বাংলা (Bengali)" },
+            { value: "en", label: "English" },
+            { value: "ar", label: "العربية (Arabic)" },
+          ].map(({ value, label }) => (
             <label
               className={cn(
                 "flex h-14 cursor-pointer items-center gap-3 rounded-xl border px-4 text-sm font-semibold text-heading transition",
-                settings.language === value ? "border-primary bg-primary-soft/50" : "border-slate-200 hover:border-primary/50",
+                selectedLang === value ? "border-primary bg-primary-soft/50" : "border-slate-200 hover:border-primary/50",
               )}
               key={value}
             >
-              <input checked={settings.language === value} className="field-check" name="language" onChange={() => changeLanguage(value)} type="radio" value={value} />
+              <input
+                checked={selectedLang === value}
+                className="field-check"
+                name="language"
+                onChange={() => {
+                  setSelectedLang(value as "bn" | "en" | "ar");
+                  setNotice(`ভাষা পরিবর্তন করা হয়েছে (${label})`);
+                }}
+                type="radio"
+                value={value}
+              />
               {label}
             </label>
           ))}
         </div>
       </SectionCard>
 
-      <SectionCard title="নোটিফিকেশন">
-        <ul className="divide-y divide-slate-100">
-          {NOTIFICATION_OPTIONS.map(({ key, title, hint }) => (
-            <li key={key}>
-              <label className="flex cursor-pointer items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0">
-                <span className="min-w-0">
-                  <span className="block font-bold text-heading">{title}</span>
-                  <span className="block text-[13px] text-slate-500">{hint}</span>
-                </span>
-                <input checked={settings.notifications[key]} className="field-check shrink-0" onChange={() => toggleNotification(key)} type="checkbox" />
-              </label>
-            </li>
-          ))}
-        </ul>
-      </SectionCard>
-
+      {/* Privacy and help links */}
       <SectionCard title="গোপনীয়তা ও সহায়তা">
         <ul className="divide-y divide-slate-100">
           {SETTINGS_LINKS.map(({ label, href, Icon }) => (
@@ -97,42 +199,24 @@ export default function SettingsPanel() {
         </ul>
       </SectionCard>
 
+      {/* Account / Logout */}
       <SectionCard title="অ্যাকাউন্ট">
         <div className="flex flex-wrap gap-3">
-          <button className="btn-outline h-11 px-5" onClick={() => setDialog("logout")} type="button">
+          <button className="btn-outline h-11 px-5" onClick={() => setLogoutOpen(true)} type="button">
             <LogOut aria-hidden="true" className="size-4" />
             লগআউট
-          </button>
-          <button
-            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-5 text-sm font-bold text-red-600 transition hover:bg-red-50"
-            onClick={() => setDialog("delete")}
-            type="button"
-          >
-            <Trash2 aria-hidden="true" className="size-4" />
-            অ্যাকাউন্ট মুছুন
           </button>
         </div>
       </SectionCard>
 
       <ConfirmDialog
         confirmLabel="লগআউট করুন"
-        description="লগআউট করলে আবার আপনার মোবাইল নম্বর দিয়ে লগইন করতে হবে।"
+        description="লগআউট করলে পরবর্তীতে ব্যবহারের জন্য আবার লগইন করতে হবে।"
         icon={<LogOut aria-hidden="true" className="size-6" />}
-        onConfirm={logout}
-        onOpenChange={close("logout")}
-        open={dialog === "logout"}
+        onConfirm={handleLogout}
+        onOpenChange={setLogoutOpen}
+        open={logoutOpen}
         title="লগআউট করবেন?"
-        tone="danger"
-      />
-
-      <ConfirmDialog
-        confirmLabel="হ্যাঁ, অ্যাকাউন্ট মুছুন"
-        description="আপনার প্রোফাইল, মেডিকেল রিপোর্ট ও প্রিয় ডাক্তারের তালিকা স্থায়ীভাবে মুছে যাবে। এটি আর ফিরিয়ে আনা যাবে না।"
-        icon={<Trash2 aria-hidden="true" className="size-6" />}
-        onConfirm={deleteAccount}
-        onOpenChange={close("delete")}
-        open={dialog === "delete"}
-        title="অ্যাকাউন্ট মুছে ফেলবেন?"
         tone="danger"
       />
     </div>

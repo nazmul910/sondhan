@@ -11,7 +11,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   currentUrl: string | null;
   /** `null` = remove the photo. */
-  onSave: (url: string | null) => void;
+  onSave: (url: string | null, file?: File | null) => void;
 };
 
 export default function AvatarDialog({ open, onOpenChange, currentUrl, onSave }: Props) {
@@ -65,8 +65,8 @@ function AvatarDialogBody({ currentUrl, onClose, onSave }: Omit<Props, "open" | 
   };
 
   const save = () => {
-    if (file) onSave(URL.createObjectURL(file));
-    else if (removed) onSave(null);
+    if (file) onSave(previewUrl, file);
+    else if (removed) onSave(null, null);
     onClose();
   };
 

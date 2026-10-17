@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Ambulance,
   HeartPulse,
@@ -11,9 +11,13 @@ import {
   Droplet,
   Stethoscope,
   X,
+  User,
+  LogOut,
 } from "lucide-react";
 import DivisionSelect from "./DivisionSelect";
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { logout } from "@/features/auth/authSlice";
 
 const navItems = [
   { label: "হোম", href: "/", Icon: HeartPulse },
@@ -31,6 +35,9 @@ function isNavItemActive(pathname: string, href: string) {
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user } = useAppSelector((s) => s.auth);
 
   useEffect(() => {
     document.body.classList.toggle("overflow-hidden", menuOpen);
@@ -44,6 +51,14 @@ export default function Navbar() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [menuOpen]);
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    setMenuOpen(false);
+    router.push("/login");
+  };
+
+  const displayName = user?.first_name || "অ্যাকাউন্ট";
 
   return (
     <header className="sticky top-0 z-30 bg-white shadow-[0_3px_18px_rgba(24,58,72,0.04)]">
@@ -78,13 +93,35 @@ export default function Navbar() {
 
         <div className="flex shrink-0 items-center gap-2">
           <DivisionSelect className="max-md:hidden cursor-pointer h-9 w-[104px] text-xs max-[380px]:w-[88px] md:inline-flex sm:w-[118px]" />
-          <Link className="hidden h-9 min-w-[82px] rounded-lg bg-primary px-4 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-md sm:inline-flex sm:items-center sm:justify-center" href="/login">
-            লগইন
-          </Link>
+
+          {isAuthenticated ? (
+            <Link
+              className="hidden h-9 items-center gap-2 rounded-lg border border-primary/20 bg-primary-soft/60 px-3 text-xs font-bold text-primary-dark transition hover:bg-primary-soft sm:inline-flex"
+              href="/account/profile"
+            >
+              <span className="grid size-5.5 place-items-center overflow-hidden rounded-full bg-primary text-white text-[10px]">
+                {user?.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img alt="" className="size-full object-cover" src={user.avatar} />
+                ) : (
+                  <User className="size-3.5" />
+                )}
+              </span>
+              <span className="max-w-[100px] truncate">{displayName}</span>
+            </Link>
+          ) : (
+            <Link
+              className="hidden h-9 min-w-[82px] rounded-lg bg-primary px-4 text-xs font-bold text-white transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-md sm:inline-flex sm:items-center sm:justify-center"
+              href="/login"
+            >
+              লগইন
+            </Link>
+          )}
+
           <button
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "মেনু বন্ধ করুন" : "মেনু খুলুন"}
-            className="grid cursor-pointer size-9 place-items-center cursor-pointer rounded-lg border border-slate-200 text-slate-700 transition hover:border-primary hover:bg-primary-soft hover:text-primary-dark lg:hidden"
+            className="grid cursor-pointer size-9 place-items-center rounded-lg border border-slate-200 text-slate-700 transition hover:border-primary hover:bg-primary-soft hover:text-primary-dark lg:hidden"
             onClick={() => setMenuOpen((open) => !open)}
             type="button"
           >
@@ -117,6 +154,26 @@ export default function Navbar() {
             <X aria-hidden="true" className="size-5" />
           </button>
         </div>
+
+        {isAuthenticated && user && (
+          <div className="mb-4 flex items-center gap-3 rounded-xl bg-primary-soft/50 p-3">
+            <span className="grid size-10 place-items-center overflow-hidden rounded-full bg-primary text-white">
+              {user.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img alt="" className="size-full object-cover" src={user.avatar} />
+              ) : (
+                <User className="size-5" />
+              )}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold text-heading">
+                {user.first_name} {user.last_name}
+              </p>
+              <p className="truncate text-xs text-slate-500">{user.email}</p>
+            </div>
+          </div>
+        )}
+
         {navItems.map(({ label, href, Icon }) => {
           const active = isNavItemActive(pathname, href);
 
@@ -134,9 +191,37 @@ export default function Navbar() {
             </Link>
           );
         })}
-        <Link className="mt-5 grid h-11 place-items-center rounded-lg bg-primary text-sm font-bold text-white transition hover:bg-primary-dark" href="/login" onClick={() => setMenuOpen(false)} tabIndex={menuOpen ? 0 : -1}>
-          লগইন করুন
-        </Link>
+
+        {isAuthenticated ? (
+          <div className="mt-4 flex flex-col gap-2">
+            <Link
+              className="grid h-11 place-items-center rounded-lg bg-primary text-sm font-bold text-white transition hover:bg-primary-dark"
+              href="/account/profile"
+              onClick={() => setMenuOpen(false)}
+              tabIndex={menuOpen ? 0 : -1}
+            >
+              আমার অ্যাকাউন্ট
+            </Link>
+            <button
+              className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-200 text-sm font-bold text-red-600 transition hover:bg-red-50"
+              onClick={handleLogout}
+              tabIndex={menuOpen ? 0 : -1}
+              type="button"
+            >
+              <LogOut className="size-4" />
+              লগআউট করুন
+            </button>
+          </div>
+        ) : (
+          <Link
+            className="mt-5 grid h-11 place-items-center rounded-lg bg-primary text-sm font-bold text-white transition hover:bg-primary-dark"
+            href="/login"
+            onClick={() => setMenuOpen(false)}
+            tabIndex={menuOpen ? 0 : -1}
+          >
+            লগইন করুন
+          </Link>
+        )}
       </nav>
     </header>
   );

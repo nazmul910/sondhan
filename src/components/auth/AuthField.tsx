@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Eye, EyeOff, type LucideIcon } from "lucide-react";
 
 type Props = {
-  autoComplete: string;
+  autoComplete?: string;
   icon: LucideIcon;
   id: string;
   label: string;
   name: string;
   placeholder: string;
   type?: "email" | "password" | "text";
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
 };
 
 export default function AuthField({
@@ -21,13 +24,18 @@ export default function AuthField({
   name,
   placeholder,
   type = "text",
+  value,
+  onChange,
+  required = true,
 }: Props) {
   const [visible, setVisible] = useState(false);
   const isPassword = type === "password";
 
   return (
     <div>
-      <label className="mb-2 block text-[13px] font-semibold text-[#477f82]" htmlFor={id}>{label}</label>
+      <label className="mb-2 block text-[13px] font-semibold text-[#477f82]" htmlFor={id}>
+        {label}
+      </label>
       <span className="flex h-[52px] items-center gap-3 rounded-xl border border-[#dedede] px-3 transition focus-within:border-[#477f82] focus-within:ring-2 focus-within:ring-[#477f82]/10">
         <Icon aria-hidden="true" className="size-5 shrink-0 text-[#477f82]" strokeWidth={1.9} />
         <input
@@ -35,9 +43,11 @@ export default function AuthField({
           className="min-w-0 flex-1 bg-transparent text-sm text-heading outline-none placeholder:text-[#777]"
           id={id}
           name={name}
+          onChange={onChange}
           placeholder={placeholder}
-          required
+          required={required}
           type={isPassword && visible ? "text" : type}
+          value={value}
         />
         {isPassword && (
           <button
