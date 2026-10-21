@@ -6,6 +6,7 @@ type ApiFetchOptions = RequestInit & {
   token?: string;
 };
 
+
 export function apiUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) return path;
   let cleanPath = path.replace(/^\/+/, "");
