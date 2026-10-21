@@ -20,6 +20,6 @@ export const NOTIFICATION_OPTIONS: { key: NotificationKey; title: string; hint: 
 
 export const SETTINGS_LINKS: { label: string; href: string; Icon: LucideIcon }[] = [
   { label: "গোপনীয়তা নীতি", href: "/privacy", Icon: ShieldCheck },
-  { label: "হেল্প সেন্টার", href: "/help", Icon: HelpCircle },
+  { label: "হেল্প সেন্টার", href: "/contact", Icon: HelpCircle },
   { label: "যোগাযোগ", href: "/contact", Icon: Mail },
 ];

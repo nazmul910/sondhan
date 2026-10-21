@@ -212,7 +212,7 @@ export default function SettingsPanel() {
 
       {/* 2. Change Password (API: POST /v1/auth/profile/password) */}
       <SectionCard title="পাসওয়ার্ড পরিবর্তন ও নিরাপত্তা">
-        <p className="text-xs text-slate-500 mb-4">
+        <p className="text-[14px] text-slate-500 mb-4">
           আপনার অ্যাকাউন্টের নিরাপত্তা নিশ্চিত করতে নিয়মিত শক্তিশালী পাসওয়ার্ড ব্যবহার করুন।
         </p>
 
@@ -314,7 +314,7 @@ export default function SettingsPanel() {
 
       {/* 3. Notifications & Emergency Alerts Preferences */}
       <SectionCard title="বিজ্ঞপ্তি ও জরুরি অ্যালার্ট প্রিফারেন্স">
-        <p className="text-xs text-slate-500 mb-4">
+        <p className="text-[14px] text-slate-500 mb-4">
           আপনার পছন্দ অনুযায়ী কোন কোন বিষয়ে বিজ্ঞপ্তি বা আপডেট পেতে চান তা নির্ধারণ করুন।
         </p>
 
@@ -328,7 +328,7 @@ export default function SettingsPanel() {
                 <strong className="block text-xs sm:text-sm font-semibold text-heading">
                   জরুরি অ্যান্টিভেনম ও রক্তদানের সতর্কতা
                 </strong>
-                <span className="text-[11px] text-slate-500 leading-normal">
+                <span className="text-[14px] text-slate-500 leading-normal">
                   আপনার এলাকায় জরুরি অ্যান্টিভেনম মজুত পরিবর্তন বা রক্তের অনুরোধ এলে জানানো হবে।
                 </span>
               </div>
@@ -350,7 +350,7 @@ export default function SettingsPanel() {
                 <strong className="block text-xs sm:text-sm font-semibold text-heading">
                   মেডিকেল ফাইল ও প্রেসক্রিপশন আপডেট
                 </strong>
-                <span className="text-[11px] text-slate-500 leading-normal">
+                <span className="text-[14px] text-slate-500 leading-normal">
                   নতুন প্রেসক্রিপশন বা ল্যাব টেস্ট রিপোর্ট সফলভাবে আপলোড হলে বিজ্ঞপ্তি পান।
                 </span>
               </div>
@@ -372,7 +372,7 @@ export default function SettingsPanel() {
                 <strong className="block text-xs sm:text-sm font-semibold text-heading">
                   স্বাস্থ্য সচেতনতা ও সাপ্তাহিক টিপস
                 </strong>
-                <span className="text-[11px] text-slate-500 leading-normal">
+                <span className="text-[14px] text-slate-500 leading-normal">
                   মৌসুমি স্বাস্থ্য পরামর্শ, পুষ্টি ও জরুরি ফার্স্ট-এইড নির্দেশিকা সম্পর্কে জানুন।
                 </span>
               </div>
@@ -394,7 +394,7 @@ export default function SettingsPanel() {
             <h4 className="text-xs sm:text-sm font-semibold text-heading">
               লোকাল ক্যাশ ও সংরক্ষিত হিস্ট্রি পরিষ্কার
             </h4>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[14px] text-slate-500 mt-0.5">
               ব্রাউজারে সেভ থাকা পুরনো এআই চ্যাট সেশন আইডি ও সার্চ ক্যাশ মুছে ফেলুন।
             </p>
           </div>
@@ -416,7 +416,7 @@ export default function SettingsPanel() {
           {SETTINGS_LINKS.map(({ label, href, Icon }) => (
             <li key={href}>
               <Link
-                className="group flex items-center gap-3 py-3 font-semibold text-heading first:pt-0 last:pb-0 hover:text-primary transition"
+                className="group flex items-center  h-10 gap-3 py-3 font-semibold text-heading first:pt-0 last:pb-0 hover:text-primary transition"
                 href={href}
               >
                 <Icon aria-hidden="true" className="size-4 text-primary shrink-0" />

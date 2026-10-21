@@ -89,7 +89,7 @@ export default function ProfilePasswordReset() {
         </span>
         <div>
           <h2 className="text-lg font-bold text-heading">পাসওয়ার্ড পরিবর্তন ও রিসেট</h2>
-          <p className="mt-0.5 text-[13px] text-slate-500">
+          <p className="mt-0.5 text-[14px] text-slate-500">
             আপনার অ্যাকাউন্টের সুরক্ষার জন্য শক্তিশালী পাসওয়ার্ড ব্যবহার করুন।
           </p>
         </div>
