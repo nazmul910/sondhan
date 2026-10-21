@@ -5,7 +5,18 @@ import type {
   HospitalsListResponse,
   HospitalDetailResponse,
 } from "./types";
-import { apiFetch, apiUrl } from "@/api/api";
+import { apiFetch } from "@/api/api";
+
+// Hospitals live at /public/api/hospitals — NOT under /api/v1
+const HOSPITALS_BASE =
+  typeof process !== "undefined" && process.env.NEXT_PUBLIC_HOSPITALS_BASE_URL
+    ? process.env.NEXT_PUBLIC_HOSPITALS_BASE_URL.replace(/\/+$/, "")
+    : "https://health.thesyndicates.team/public/api";
+
+function hospitalsUrl(path: string): string {
+  const clean = path.replace(/^\/+/, "");
+  return `${HOSPITALS_BASE}/${clean}`;
+}
 
 const EMPTY_PAGINATION: ApiPagination = {
   total: 0,
@@ -23,14 +34,14 @@ export async function fetchHospitals(params?: {
   per_page?: number;
   page?: number;
 }): Promise<{ data: ApiHospitalListItem[]; pagination: HospitalsListResponse["pagination"] }> {
-  const url = new URL(apiUrl("hospitals"));
+  const url = new URL(hospitalsUrl("hospitals"));
   if (params?.search) url.searchParams.set("search", params.search);
   if (params?.latitude) url.searchParams.set("latitude", String(params.latitude));
   if (params?.longitude) url.searchParams.set("longitude", String(params.longitude));
   if (params?.per_page) url.searchParams.set("per_page", String(params.per_page));
   if (params?.page) url.searchParams.set("page", String(params.page));
 
-  const res = await apiFetch(url.toString(), {
+  const res = await fetch(url.toString(), {
     next: { revalidate: 60 },
   });
 
@@ -41,7 +52,7 @@ export async function fetchHospitals(params?: {
 }
 
 export async function fetchHospitalById(id: number | string): Promise<ApiHospitalDetail> {
-  const res = await apiFetch(`hospitals/${id}`, {
+  const res = await fetch(hospitalsUrl(`hospitals/${id}`), {
     next: { revalidate: 60 },
   });
 

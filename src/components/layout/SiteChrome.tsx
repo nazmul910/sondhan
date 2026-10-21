@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import AiChatDrawer from "@/components/chat/AiChatDrawer";
 
 export default function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -18,6 +19,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
     <>
       <Navbar />
       {children}
+      <AiChatDrawer />
       <Footer />
     </>
   );

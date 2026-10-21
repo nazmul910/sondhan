@@ -40,7 +40,23 @@ export async function fetchDoctorById(
 
   if (!res.ok) throw new Error(`Failed to fetch doctor #${id}: ${res.status}`);
   const json: DoctorDetailResponse = await res.json();
-  return json.data.doctor;
+  const doctor = json.data.doctor;
+
+  const imagePath = doctor.image_url
+    ? new URL(doctor.image_url, apiUrl("doctors")).pathname
+    : "";
+  if (imagePath.startsWith("/uploads/doctors/")) {
+    try {
+      const doctors = await fetchDoctors();
+      const signedImageUrl = doctors.find((item) => item.id === doctor.id)?.image_url ?? null;
+      return { ...doctor, image_url: signedImageUrl };
+    } catch (error) {
+      console.error(`Failed to load signed image URL for doctor #${doctor.id}`, error);
+      return { ...doctor, image_url: null };
+    }
+  }
+
+  return doctor;
 }
 
 export async function toggleDoctorWishlist(

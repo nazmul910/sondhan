@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import HospitalCard from "@/components/hopital/HospitalCard";
-import EmptyState from "@/components/shared/EmptyState";
+import HospitalApiGrid from "@/components/hopital/HospitalApiGrid";
 import PageHero from "@/components/shared/PageHero";
-import { getAntivenomHospitals } from "@/lib/hospitals";
 
 export const metadata: Metadata = {
   title: "অ্যান্টিভেনম আছে এমন হাসপাতাল | Shondhan",
   description: "অ্যান্টিভেনম আছে এমন হাসপাতালের তালিকা ও যোগাযোগের তথ্য দেখুন।",
 };
 
-export default async function AntivenomPage() {
-  const hospitals = await getAntivenomHospitals();
-
+export default function AntivenomPage() {
   return (
     <main>
       <PageHero
@@ -22,21 +18,10 @@ export default async function AntivenomPage() {
       />
 
       <section aria-label="অ্যান্টিভেনম আছে এমন হাসপাতাল" className="page-container py-8 pb-16">
-        {hospitals.length ? (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-            {hospitals.map((hospital) => (
-              <HospitalCard hospital={hospital} key={hospital.id} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            hint="এই মুহূর্তে অ্যান্টিভেনম আছে এমন কোনো হাসপাতালের তথ্য পাওয়া যায়নি। জরুরি প্রয়োজনে নিকটস্থ হাসপাতাল বা জরুরি সেবায় যোগাযোগ করুন।"
-            resetHref="/hospitals"
-            title="অ্যান্টিভেনম আছে এমন হাসপাতাল পাওয়া যায়নি"
-          />
-        )}
-        <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-          তালিকাটি নমুনা তথ্য দিয়ে তৈরি। জরুরি অবস্থা হলে দ্রুত চিকিৎসা নিন; যাওয়ার আগে হাসপাতালে ফোন করে অ্যান্টিভেনমের মজুত নিশ্চিত করুন।
+        <HospitalApiGrid antivenomOnly={true} />
+
+        <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-900">
+          ⚠️ জরুরি অবস্থা হলে দ্রুততম সময়ে হাসপাতালে যান; যাওয়ার আগে হাসপাতালে ফোন করে অ্যান্টিভেনমের মজুত নিশ্চিত করার পরামর্শ দেওয়া হচ্ছে।
         </p>
       </section>
     </main>

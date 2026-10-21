@@ -202,8 +202,8 @@ export default function DoctorDetailClient({ id }: { id: string }) {
       {doctor.hospitals.length > 0 && (
         <SectionCard title="চেম্বার ও সময়সূচী">
           <div className="flex flex-col gap-4">
-            {doctor.hospitals.map((h) => (
-              <article className="rounded-xl bg-slate-50 p-4 sm:p-5" key={h.id}>
+            {doctor.hospitals.map((h, index) => (
+              <article className="rounded-xl bg-slate-50 p-4 sm:p-5" key={`${h.id}-${index}`}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
                     <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">

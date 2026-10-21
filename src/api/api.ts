@@ -1,5 +1,5 @@
 const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://dashboard.shondan.org/api/v1"
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://health.thesyndicates.team/api/v1"
 ).replace(/\/+$/, "");
 
 type ApiFetchOptions = RequestInit & {
@@ -8,7 +8,11 @@ type ApiFetchOptions = RequestInit & {
 
 export function apiUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) return path;
-  return `${API_BASE_URL}/${path.replace(/^\/+/, "")}`;
+  let cleanPath = path.replace(/^\/+/, "");
+  if (cleanPath.startsWith("v1/") && API_BASE_URL.endsWith("/v1")) {
+    cleanPath = cleanPath.slice(3);
+  }
+  return `${API_BASE_URL}/${cleanPath}`;
 }
 
 export function apiFetch(path: string, options: ApiFetchOptions = {}): Promise<Response> {

@@ -24,7 +24,7 @@ const navItems = [
   { label: "ডাক্তার", href: "/doctors", Icon: Stethoscope },
   { label: "হাসপাতাল", href: "/hospitals", Icon: Hospital },
   { label: "অ্যাম্বুলেন্স", href: "/ambulances", Icon: Ambulance },
-  { label: "রক্ত ব্যাংক", href: "/blood-bank", Icon: Droplet },
+  { label: "ব্লাড ব্যাংক", href: "/blood-bank", Icon: Droplet },
   { label: "স্বাস্থ্য টিপস", href: "/health-tips", Icon: NotebookTabs },
 ];
 
@@ -69,18 +69,18 @@ export default function Navbar() {
           </span>
           <span className="flex flex-col leading-tight">
             <strong className="text-xl font-bold tracking-tight text-primary-dark lg:text-[22px]">Shondhan</strong>
-            <small className="mt-0.5 whitespace-nowrap text-[10px] md:text-[14px] text-slate-600 max-[380px]:hidden">প্রয়োজনের সময়, Sondhan তখন</small>
+            <small className="mt-0.5 whitespace-nowrap text-[10px] md:text-[14px] text-slate-600 max-[380px]:hidden">প্রয়োজনর যখন, <span className=" font-bold text-primary">Sondhan</span> তখন</small>
           </span>
         </Link>
 
-        <nav aria-label="প্রধান নেভিগেশন" className="hidden min-w-0 flex-1 items-center justify-center gap-2 xl:flex xl:gap-3">
+        <nav aria-label="প্রধান নেভিগেশন" className="hidden min-w-0 flex-1 items-center justify-center gap-4 xl:flex xl:gap-5">
           {navItems.map(({ label, href, Icon }) => {
             const active = isNavItemActive(pathname, href);
 
             return (
               <Link
                 aria-current={active ? "page" : undefined}
-                className={`group relative flex h-[52px] shrink-0 items-center gap-3 text-[12px] font-semibold transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-primary after:transition-transform hover:text-primary-dark hover:after:scale-x-100 xl:gap-5 xl:text-[16px] ${active ? "text-primary-dark after:scale-x-100" : "text-slate-600"}`}
+                className={`group relative flex h-[52px] shrink-0 items-center gap-2 text-[12px] font-semibold transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-primary after:transition-transform hover:text-primary-dark hover:after:scale-x-100 xl:gap-2 xl:text-[16px] ${active ? "text-primary-dark after:scale-x-100" : "text-slate-600"}`}
                 href={href}
                 key={label}
               >

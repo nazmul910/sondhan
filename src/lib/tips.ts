@@ -4,7 +4,7 @@ import { paginate, type Paged } from "./list";
 import { first, parsePage, pickOne, type RawSearchParams } from "./query";
 import { tips } from "@/data/tips";
 
-export const TIPS_PAGE_SIZE = 6;
+export const TIPS_PAGE_SIZE = 8;
 
 export function parseTipQuery(raw: RawSearchParams): TipQuery {
   return {
@@ -42,6 +42,6 @@ export async function getRelatedTips(tip: HealthTip, limit = 3) {
 
 export const getAllTipIds = () => tips.map((t) => t.id);
 
-/** "2026-10-05" -> "৫ অক্টোবর, ২০২৬" */
+
 export const formatTipDate = (iso: string) =>
   new Intl.DateTimeFormat("bn-BD", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));

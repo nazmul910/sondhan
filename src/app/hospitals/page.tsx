@@ -21,6 +21,7 @@ export default async function HospitalsPage({
   const raw = await searchParams;
   const search = (first(raw.q) ?? "").trim() || undefined;
   const type = first(raw.type) || undefined;
+  const isAntivenom = first(raw.antivenom) === "true" || type === "antivenom";
 
   return (
     <main>
@@ -38,7 +39,7 @@ export default async function HospitalsPage({
         <div className="mt-4">
           <ChipLinks
             basePath="/hospitals"
-            current={type ?? null}
+            current={isAntivenom ? "antivenom" : (type ?? null)}
             options={HOSPITAL_TYPE_TABS}
             param="type"
             params={raw}
@@ -48,7 +49,7 @@ export default async function HospitalsPage({
 
       <div className="page-container py-9 pb-16">
         <section aria-label="হাসপাতালের তালিকা">
-          <HospitalApiGrid search={search} />
+          <HospitalApiGrid search={search} antivenomOnly={isAntivenom} />
           <AiBanner text="কোন বিভাগে যাবেন বুঝতে পারছেন না? লক্ষণ বলুন, সঠিক বিশেষজ্ঞ ও হাসপাতাল খুঁজে নিন।" />
         </section>
       </div>

@@ -30,9 +30,9 @@ export default function Pagination({
     <nav aria-label="পেজ নেভিগেশন" className="mt-8 flex flex-wrap items-center justify-center gap-2">
       {page > 1 && (
         <>
-          <Link aria-label="প্রথম পেজ" className="page-btn border border-slate-200 bg-white text-slate-700 hover:border-primary" href={href(1)}>
+          {/* <Link aria-label="প্রথম পেজ" className="page-btn border border-slate-200 bg-white text-slate-700 hover:border-primary" href={href(1)}>
             প্রথম
-          </Link>
+          </Link> */}
           <Link aria-label="আগের পেজ" className="page-btn border border-slate-200 bg-white px-4 font-semibold text-primary-dark" href={href(page - 1)}>
             আগের
           </Link>
@@ -56,9 +56,9 @@ export default function Pagination({
           <Link aria-label="পরের পেজ" className="page-btn border border-slate-200 bg-white px-4 font-semibold text-primary-dark" href={href(page + 1)} key="next">
           পরের পেজ
           </Link>
-          <Link aria-label="শেষ পেজ" className="page-btn border border-slate-200 bg-white text-slate-700 hover:border-primary" href={href(pageCount)} key="last">
+          {/* <Link aria-label="শেষ পেজ" className="page-btn border border-slate-200 bg-white text-slate-700 hover:border-primary" href={href(pageCount)} key="last">
             শেষ
-          </Link>
+          </Link> */}
         </>
       )}
     </nav>

@@ -7,8 +7,8 @@ import type { BloodBank } from "@/features/bloodBanks/bloodBankApi";
 import { toBn } from "@/lib/format";
 
 const LOCATIONS = [
-  { value: "Dhaka", label: "ঢাকা" },
   { value: "Tangail", label: "টাঙ্গাইল" },
+  { value: "Dhaka", label: "ঢাকা" },
   { value: "Mymensingh", label: "ময়মনসিংহ" },
 ] as const;
 

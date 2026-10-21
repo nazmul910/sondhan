@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         hostname: "dashboard.shondan.org",
       },
       {
+        protocol: "https",
+        hostname: "health.thesyndicates.team",
+        pathname: "/storage/uploads/doctors/**",
+      },
+      {
         protocol: "http",
         hostname: "dashboard.shondan.org",
       },

@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import HospitalDepartments from "@/components/hopital/HospitalDepartments";
 import HospitalDoctorDirectory from "@/components/hopital/HospitalDoctorDirectory";
-
 import HospitalProfileHeader from "@/components/hopital/HospitalProfileHeader";
-
 import HospitalSidebar from "@/components/hopital/HospitalSidebar";
 import Breadcrumb from "@/components/shared/Breadcrumb";
 import { getDoctorsByHospital } from "@/lib/doctors";
 import { getAllHospitalIds, getHospitalById } from "@/lib/hospitals";
+import { fetchHospitalById } from "@/features/hospitals/hospitalApi";
 import HospitalInfo from "@/components/hopital/HospitalInfo";
 import HospitalServices from "@/components/hopital/HospitalServices";
 
@@ -20,17 +19,68 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const hospital = await getHospitalById(id);
-  if (!hospital) return { title: "প্রতিষ্ঠান পাওয়া যায়নি | Shondhan" };
+  let name = "";
+  let address = "";
+
+  try {
+    const apiHospital = await fetchHospitalById(id);
+    name = apiHospital.name;
+    address = apiHospital.address;
+  } catch {
+    const fallback = await getHospitalById(id);
+    if (fallback) {
+      name = fallback.name;
+      address = fallback.address;
+    }
+  }
+
+  if (!name) return { title: "প্রতিষ্ঠান পাওয়া যায়নি | Shondhan" };
 
   return {
-    title: `${hospital.name} | Shondhan`,
-    description: `${hospital.name}, ${hospital.address}। বিভাগ, ডাক্তার, সেবা ও যোগাযোগ।`,
+    title: `${name} | Shondhan`,
+    description: `${name}, ${address}। বিভাগ, ডাক্তার, সেবা ও যোগাযোগ।`,
   };
 }
 
 export default async function HospitalDetailPage({ params }: Props) {
   const { id } = await params;
+
+  // Try real API first
+  const apiHospital = await fetchHospitalById(id).catch(() => null);
+
+  if (apiHospital) {
+    return (
+      <main className="page-container py-8 pb-16">
+        <Breadcrumb
+          items={[
+            { label: "হোম", href: "/" },
+            { label: "হাসপাতাল", href: "/hospitals" },
+            { label: apiHospital.name },
+          ]}
+        />
+
+        <div className="mt-5 lg:flex lg:items-start lg:gap-6">
+          <div className="flex min-w-0 flex-1 flex-col gap-5">
+            <HospitalProfileHeader hospital={apiHospital} />
+            <HospitalDoctorDirectory apiDoctors={apiHospital.doctors} />
+          </div>
+
+          <aside className="mt-5 lg:sticky lg:top-24 lg:mt-0 lg:w-[340px] lg:shrink-0">
+            <HospitalSidebar
+              hospital={{
+                name: apiHospital.name,
+                address: apiHospital.address,
+                phone: apiHospital.phone,
+                away: apiHospital.away,
+              }}
+            />
+          </aside>
+        </div>
+      </main>
+    );
+  }
+
+  // Fallback to local mock hospital if API failed or offline
   const hospital = await getHospitalById(id);
   if (!hospital) notFound();
 
@@ -38,7 +88,13 @@ export default async function HospitalDetailPage({ params }: Props) {
 
   return (
     <main className="page-container py-8 pb-16">
-      <Breadcrumb items={[{ label: "হোম", href: "/" }, { label: "হাসপাতাল", href: "/hospitals" }, { label: hospital.name }]} />
+      <Breadcrumb
+        items={[
+          { label: "হোম", href: "/" },
+          { label: "হাসপাতাল", href: "/hospitals" },
+          { label: hospital.name },
+        ]}
+      />
 
       <div className="mt-5 lg:flex lg:items-start lg:gap-6">
         <div className="flex min-w-0 flex-1 flex-col gap-5">

@@ -32,5 +32,6 @@ export const FACILITY_KEYS = Object.keys(FACILITY_LABELS) as FacilityKey[];
 /** Tabs under the hospital hero search. */
 export const HOSPITAL_TYPE_TABS = [
   { value: "", label: "সব" },
+  { value: "antivenom", label: "অ্যান্টিভেনম আছে" },
   ...HOSPITAL_TYPE_KEYS.map((key) => ({ value: key, label: HOSPITAL_TYPE_LABELS[key] })),
 ];

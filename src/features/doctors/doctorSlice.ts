@@ -6,7 +6,7 @@ import {
   fetchWishlistDoctors,
   rateDoctor,
 } from "./doctorApi";
-import type { DoctorsState } from "./types";
+import type { DoctorsState, ApiDoctorListItem } from "./types";
 
 // ─── Async Thunks ────────────────────────────────────────────────────────────
 
@@ -156,9 +156,18 @@ const doctorSlice = createSlice({
           state.items.find((d) => Number(d.id) === Number(doctorId)) ||
           (state.selectedDoctor && Number(state.selectedDoctor.id) === Number(doctorId) ? state.selectedDoctor : null);
         if (found && !state.wishlistItems.some((d) => Number(d.id) === Number(doctorId))) {
-          state.wishlistItems.push(found as any);
+          state.wishlistItems.push(found as unknown as ApiDoctorListItem);
         } else if (!state.wishlistItems.some((d) => Number(d.id) === Number(doctorId))) {
-          state.wishlistItems.push({ id: Number(doctorId), name: "ডাক্তার" } as any);
+          state.wishlistItems.push({
+            id: Number(doctorId),
+            name: "ডাক্তার",
+            qualifications: "",
+            specialization: "",
+            experience: "",
+            away: null,
+            image_url: null,
+            category: { id: 0, name: "" },
+          });
         }
       }
     });
