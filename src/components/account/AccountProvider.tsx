@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { initialProfile } from "@/data/profile";
-import { initialReports } from "@/data/reports";
 import { initialSettings } from "@/data/settings";
 import type { AppSettings, Profile, Report, ReportDraft } from "@/types/account";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
@@ -113,7 +112,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     avatarUrl: user?.avatar || null,
   }));
 
-  const [reports, setReports] = useState<Report[]>(initialReports);
+  const [reports, setReports] = useState<Report[]>([]);
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
 
   // Sync profile when user changes in Redux

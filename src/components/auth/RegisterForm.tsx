@@ -171,9 +171,9 @@ export default function RegisterForm() {
       <div className="mt-6">
         <OrDivider />
       </div>
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <GoogleButton />
-      </div>
+      </div> */}
     </form>
   );
 }

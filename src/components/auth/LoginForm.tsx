@@ -120,9 +120,9 @@ export default function LoginForm() {
       <div className="mt-8">
         <OrDivider />
       </div>
-      <div className="mt-7">
+      {/* <div className="mt-7">
         <GoogleButton />
-      </div>
+      </div> */}
     </form>
   );
 }
