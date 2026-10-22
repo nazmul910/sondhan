@@ -67,7 +67,7 @@ export default function Footer() {
   return (
     <footer aria-label="ফুটার" className="relative mt-auto overflow-hidden bg-heading text-slate-300">
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
-      <div className="page-container grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-8 lg:py-14">
+      <div className="page-container grid gap-10 py-12 grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-8 lg:py-14">
         <div className="max-w-sm">
           <Link aria-label="Shondhan হোম" className="group inline-flex items-center gap-2.5" href="/">
             <span className="grid size-10 place-items-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20 transition duration-300 group-hover:-rotate-6 group-hover:scale-105">

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import AiChatDrawer from "@/components/chat/AiChatDrawer";
+import AiChatFAB from "@/components/chat/AiChatFAB";
 
 export default function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,8 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
       <Navbar />
       {children}
       <AiChatDrawer />
+      {/* Global floating AI chatbot FAB – visible on all pages */}
+      <AiChatFAB />
       <Footer />
     </>
   );
