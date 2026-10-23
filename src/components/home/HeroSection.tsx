@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { Search, ShieldPlus, ArrowRight } from "lucide-react";
 import DivisionSelect from "@/components/layout/DivisionSelect";
+import Image from "next/image";
+import heroImg from "@/assets/home/photo_2026-10-23_21-24-59.jpg"
+import heroImg1 from "@/assets/home/photo_2026-10-23_21-25-03.jpg"
+import heroImg2 from "@/assets/home/Family Healthcare Hospital Locator.png"
 
 const popularSearches = ["জেনারেল ফিজিশিয়ান", "কার্ডিওলজিস্ট", "গাইনোকোলজিস্ট", "শিশু বিশেষজ্ঞ"];
 
@@ -12,7 +16,17 @@ export default function HeroSection() {
       className="relative isolate overflow-hidden bg-gradient-to-r from-[#effaf7] via-[#f5fbfa] to-[#eef9f6]"
       id="home"
     >
-      <div className="page-container relative flex min-h-[340px] items-center py-10 max-md:min-h-[380px] max-md:py-8">
+      <div className="hidden lg:block absolute right-0 bottom-0 top-0 w-[60%] h-full">
+        <Image
+          src={heroImg2}
+          alt="hero image"
+          className="w-full h-full object-cover"
+          
+        />
+
+      </div>
+
+      <div className="page-container relative z-20 flex min-h-[340px] items-center py-10 max-md:min-h-[380px] max-md:py-8">
         {/* Search & Links Column */}
         <div className="relative z-10 w-full max-w-[760px]">
           <span className="inline-flex items-center gap-2 text-xs font-bold text-primary">
