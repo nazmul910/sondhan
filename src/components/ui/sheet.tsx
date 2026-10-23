@@ -17,7 +17,9 @@ function SheetOverlay({
   return (
     <DialogPrimitive.Overlay
       className={cn(
-        "fixed inset-0 z-50 bg-[rgb(17_29_47/45%)] backdrop-blur-xs transition-opacity duration-300 data-[state=closed]:opacity-0 data-[state=open]:opacity-100",
+        "fixed inset-0 z-50 bg-[rgb(17_29_47/40%)] backdrop-blur-xs",
+        "transition-opacity duration-400 ease-in-out",
+        "data-[state=closed]:opacity-0 data-[state=open]:opacity-100",
         className
       )}
       {...props}
@@ -42,7 +44,14 @@ function SheetContent({
     top: "inset-x-0 top-0 border-b data-[state=closed]:-translate-y-full data-[state=open]:translate-y-0",
     bottom: "inset-x-0 bottom-0 border-t data-[state=closed]:translate-y-full data-[state=open]:translate-y-0",
     left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0 sm:max-w-sm",
-    right: "inset-y-0 right-0 h-full w-full border-l border-slate-200 data-[state=closed]:translate-x-full data-[state=open]:translate-x-0 sm:max-w-md md:max-w-lg",
+    right: [
+      "inset-y-0 right-0 h-full w-full border-l border-slate-200",
+      "sm:max-w-md md:max-w-lg",
+      // open: slide in from right
+      "data-[state=open]:translate-x-0",
+      // closed: slide out to right — keep visible until animation done
+      "data-[state=closed]:translate-x-full",
+    ].join(" "),
   }[side];
 
   return (
@@ -50,7 +59,9 @@ function SheetContent({
       <SheetOverlay />
       <DialogPrimitive.Content
         className={cn(
-          "fixed z-50 flex flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out outline-none",
+          "fixed z-50 flex flex-col bg-white shadow-2xl outline-none",
+          // smooth slide — duration must match Radix's close delay to prevent snap
+          "transition-transform duration-[380ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
           sideClasses,
           className
         )}

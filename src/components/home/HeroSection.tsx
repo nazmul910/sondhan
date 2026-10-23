@@ -100,6 +100,7 @@ export default function HeroSection() {
             </span>
             <ArrowRight aria-hidden="true" className="size-5 shrink-0 text-rose-700" />
           </Link>
+          
         </div>
       </div>
     </section>
