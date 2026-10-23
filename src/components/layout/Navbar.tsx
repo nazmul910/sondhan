@@ -19,6 +19,9 @@ import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logout } from "@/features/auth/authSlice";
 
+import Image from "next/image";
+import logo from "@/assets/navbar/logo-main.png"
+
 const navItems = [
   { label: "হোম", href: "/", Icon: HeartPulse },
   { label: "ডাক্তার", href: "/doctors", Icon: Stethoscope },
@@ -65,7 +68,12 @@ export default function Navbar() {
       <div className="page-container flex min-h-16 items-center justify-between gap-3 py-2 max-[380px]:gap-1 lg:min-h-22.5 lg:gap-5">
         <Link className="inline-flex shrink-0 items-center gap-2" href="/" aria-label="Shondhan হোম">
           <span className="grid size-10 place-items-center rounded-full bg-primary text-white shadow-md shadow-primary/20">
-            <HeartPulse aria-hidden="true" className="size-6" strokeWidth={2.4} />
+            {/* <HeartPulse aria-hidden="true" className="size-6" strokeWidth={2.4} /> */}
+            <Image
+              src={logo}
+              alt="Sondhan logo"
+              className="w-9"
+            />
           </span>
           <span className="flex flex-col leading-tight">
             <strong className="text-xl font-bold tracking-tight text-primary-dark lg:text-[22px]">Shondhan</strong>
