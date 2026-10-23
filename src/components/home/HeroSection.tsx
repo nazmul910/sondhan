@@ -34,9 +34,9 @@ export default function HeroSection() {
             আপনার সুস্থতার সঙ্গী
           </span>
           <h1 className="mt-3 text-[clamp(34px,4.1vw,52px)] font-bold leading-[1.25] tracking-tight text-heading max-md:text-[clamp(34px,9vw,43px)]">
-            আপনার প্রয়োজনের
+            প্রয়োজনের স্বাস্থ্যসেবা
             <br />
-            <span className="text-primary">স্বাস্থ্যসেবা খুঁজুন</span>
+            <span className="text-primary">এখন হাতের কাছেই</span>
           </h1>
           <p className="mt-2 text-[15px] leading-7 text-slate-600 max-md:max-w-sm max-md:text-[13px]">
             কাছাকাছি ডাক্তার, হাসপাতাল, অ্যাম্বুলেন্স ও প্রয়োজনীয়
