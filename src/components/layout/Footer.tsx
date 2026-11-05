@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, HeartPulse, Phone } from "lucide-react";
+import Image from "next/image";
+import logo from "@/assets/navbar/logo-main.png"
 
 const columns = [
   {
@@ -71,7 +73,7 @@ export default function Footer() {
         <div className="max-w-sm">
           <Link aria-label="Shondhan হোম" className="group inline-flex items-center gap-2.5" href="/">
             <span className="grid size-10 place-items-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20 transition duration-300 group-hover:-rotate-6 group-hover:scale-105">
-              <HeartPulse aria-hidden="true" className="size-5" strokeWidth={2.4} />
+              <Image alt="Shondhan Logo" className="" height={40} src={logo} width={40} />
             </span>
             <span className="text-[22px] font-bold tracking-tight text-white">Shondhan</span>
           </Link>
