@@ -18,13 +18,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## API configuration
 
-Set the API base URL in `.env.local` when using a different API server:
+Set the API base URL in `.env.local`:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://dashboard.shondan.org/api/v1
+NEXT_PUBLIC_API_BASE_URL=https://health.thesyndicates.team/api/v1
 ```
 
-If this variable is omitted, the application uses the URL shown above by default.
+Restart the development server after changing the value. The app reads this URL from the environment, and API requests will fail with a clear error if it is missing.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

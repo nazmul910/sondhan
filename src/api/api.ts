@@ -1,6 +1,4 @@
-const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://health.thesyndicates.team/api/v1"
-).replace(/\/+$/, "");
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "");
 
 type ApiFetchOptions = RequestInit & {
   token?: string;
@@ -9,6 +7,9 @@ type ApiFetchOptions = RequestInit & {
 
 export function apiUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) return path;
+  if (!API_BASE_URL) {
+    throw new Error("NEXT_PUBLIC_API_BASE_URL is not set. Add it to .env.local.");
+  }
   let cleanPath = path.replace(/^\/+/, "");
   if (cleanPath.startsWith("v1/") && API_BASE_URL.endsWith("/v1")) {
     cleanPath = cleanPath.slice(3);
